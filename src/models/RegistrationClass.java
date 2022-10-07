@@ -15,6 +15,6 @@ public class RegistrationClass {
     private int beginLearning; // tiết bắt đầu 1 2 3...
     private int amountLearning; // số tiết học
 
-    private ClassRoom classRoom; // lớp này học phần này
+    private ClassRoom classRoom; // lớp này học phòng này
 
 }
