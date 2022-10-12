@@ -14,7 +14,7 @@ public class RegistrationClass {
     private int date; // ngày ... trong tuần
     private int beginLearning; // tiết bắt đầu 1 2 3...
     private int amountLearning; // số tiết học
-
+    private Subject subject;//môn học của học phần này
     private ClassRoom classRoom; // lớp này học phòng này
 
 }

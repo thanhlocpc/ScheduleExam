@@ -17,6 +17,16 @@ public class Subject {
         this.examForms = examForms;
     }
 
+    @Override
+    public String toString() {
+        return "Subject{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", credit=" + credit +
+                ", examForms=" + examForms +
+                '}';
+    }
+
     public Subject() {
     }
 
