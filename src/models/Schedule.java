@@ -13,9 +13,13 @@ import java.util.List;
  */
 public class Schedule {
     //    private List<DateSchedule> dateScheduleList;
-    public static List<DateSchedule> generateSchedule(List<Subject> subjectList) {
+    public static List<DateSchedule> generateSchedule(List<Subject> subjectList, List<String> dates) {
         List<DateSchedule> dateScheduleList = new ArrayList<>();
+        List<Subject> remainSubjectList = new ArrayList<>(subjectList);
 
+        for (String d : dates) {
+            dateScheduleList.add(new DateSchedule(d, remainSubjectList));
+        }
         return dateScheduleList;
     }
 
@@ -31,11 +35,25 @@ public class Schedule {
         return subjectList;
     }
 
+
     public static void main(String[] args) throws IOException {
         List<Subject> subjectList = getSubjectList();
-
-        for (Subject s : subjectList) {
-            System.out.println(s.toString());
+        List<String> dates = new ArrayList<>();
+        dates.add("12/10/2022");
+        dates.add("13/10/2022");
+        dates.add("14/10/2022");
+        dates.add("15/10/2022");
+        dates.add("16/10/2022");
+        dates.add("17/10/2022");
+        List<DateSchedule> dses = new ArrayList<>();
+//        while (subjectList.size() > 0) {
+//
+//        }
+        for (String d : dates) {
+            DateSchedule ds = new DateSchedule(d, subjectList);
+            subjectList = ds.generateSubjectSchedule();
+            dses.add(ds);
+            System.out.println(ds.toString());
         }
     }
 }

@@ -11,12 +11,14 @@ public class ClassRoom {
     private String name;
     private int capacityBase;
     private int capacityExam;
+    private int type;//0:LT,1:TH
 
-    public ClassRoom(String id, String name, int capacityBase, int capacityExam) {
+    public ClassRoom(String id, String name, int capacityBase, int capacityExam, int type) {
         this.id = id;
         this.name = name;
         this.capacityBase = capacityBase;
         this.capacityExam = capacityExam;
+        this.type = type;
     }
 
     public ClassRoom() {
@@ -63,4 +65,6 @@ public class ClassRoom {
                 ", capacityExam=" + capacityExam +
                 '}';
     }
+
+
 }
