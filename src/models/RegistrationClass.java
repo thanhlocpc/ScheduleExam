@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 /**
  * @author : Thành Lộc
  * @since : 10/7/2022, Fri
@@ -11,6 +13,7 @@ public class RegistrationClass {
     private String name;
     private int estimatedClassSize; // sĩ số lớp dự kiến
     private int estimatedClassSizeReal; // sĩ số lớp thực tế
+    private List<Student> listStudent;
 
     @Override
     public String toString() {
