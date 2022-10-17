@@ -12,18 +12,22 @@ import java.util.List;
  *
  */
 public class Schedule {
-    //    private List<DateSchedule> dateScheduleList;
-    public static List<DateSchedule> generateSchedule(List<Subject> subjectList, List<String> dates) {
+    private List<DateSchedule> dateScheduleList;
+    double fitness;
+
+    public void generateSchedule(List<Subject> subjectList, List<String> dates) throws IOException {
         List<DateSchedule> dateScheduleList = new ArrayList<>();
         List<Subject> remainSubjectList = new ArrayList<>(subjectList);
 
         for (String d : dates) {
-            dateScheduleList.add(new DateSchedule(d, remainSubjectList));
+            DateSchedule ds = new DateSchedule(d, remainSubjectList);
+            remainSubjectList = ds.generateSubjectSchedule();
+            dateScheduleList.add(ds);
         }
-        return dateScheduleList;
+        this.dateScheduleList = dateScheduleList;
     }
 
-    public static List<Subject> getSubjectList() throws IOException {
+    public List<Subject> getSubjectList() throws IOException {
         List<Subject> subjectList = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader("data/subject"));
         String line = reader.readLine();
@@ -35,9 +39,31 @@ public class Schedule {
         return subjectList;
     }
 
+    public void fitness() {
+        double result = 0;
+
+        //tính sự chênh lêch số tiết thi giữa các ngày thi
+        double examAmountDiifPerDay = 0;
+        for (int i = 0; i < dateScheduleList.size(); i++) {
+            examAmountDiifPerDay += dateScheduleList.get(i).subjectSchedules.size();
+        }
+        examAmountDiifPerDay /= dateScheduleList.size();
+        for (int i = 0; i < dateScheduleList.size(); i++) {
+            result += Math.abs(dateScheduleList.get(i).subjectSchedules.size() - examAmountDiifPerDay);
+        }
+        //////////////////////////
+
+
+        this.fitness = result;
+    }
+
+    public List<DateSchedule> getDateScheduleList() {
+        return dateScheduleList;
+    }
 
     public static void main(String[] args) throws IOException {
-        List<Subject> subjectList = getSubjectList();
+        Schedule s = new Schedule();
+        List<Subject> subjectList = s.getSubjectList();
         List<String> dates = new ArrayList<>();
         dates.add("12/10/2022");
         dates.add("13/10/2022");
@@ -45,15 +71,13 @@ public class Schedule {
         dates.add("15/10/2022");
         dates.add("16/10/2022");
         dates.add("17/10/2022");
-        List<DateSchedule> dses = new ArrayList<>();
-//        while (subjectList.size() > 0) {
-//
-//        }
-        for (String d : dates) {
-            DateSchedule ds = new DateSchedule(d, subjectList);
-            subjectList = ds.generateSubjectSchedule();
-            dses.add(ds);
-            System.out.println(ds.toString());
+        s.generateSchedule(subjectList, dates);
+        List<DateSchedule> dses = s.getDateScheduleList();
+        for (int i = 0; i < dses.size(); i++) {
+            System.out.println(dses.get(i).toString());
         }
+
     }
+
+
 }

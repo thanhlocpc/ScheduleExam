@@ -20,4 +20,8 @@ public class SubjectSchedule {
                 ", " + (shift+1)
                 ;
     }
+
+    public Subject getSubject() {
+        return subject;
+    }
 }

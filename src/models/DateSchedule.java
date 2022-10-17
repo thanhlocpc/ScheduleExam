@@ -15,6 +15,7 @@ public class DateSchedule {
     List<String[]> usedListTH;
     List<String[]> usedListLT;
     List<Subject> subjectList;//danh sách môn thi chưa được sắp xếp
+    double fitness;
 
     public DateSchedule(String date, List<Subject> subjectList) {
         this.date = date;
@@ -84,6 +85,57 @@ public class DateSchedule {
         return result;
     }
 
+    public void finess() {
+        double result = 0;
+
+        //tính số lượng ca thi của các lớp thi của 1 môn
+        Set<String> subjectListInDate = new HashSet<>();
+        for (int i = 0; i < subjectSchedules.size(); i++) {
+            subjectListInDate.add(subjectSchedules.get(i).getSubject().getId());
+        }
+        for (String s : subjectListInDate) {
+            Map<Integer, Integer> examClassInShifts = new HashMap<>();
+            examClassInShifts.put(0, 0);
+            examClassInShifts.put(1, 0);
+            examClassInShifts.put(2, 0);
+            examClassInShifts.put(3, 0);
+            for (int i = 0; i < subjectSchedules.size(); i++) {
+                SubjectSchedule ss = subjectSchedules.get(i);
+                if (ss.getSubject().getId().equals(s))
+                    examClassInShifts.put(ss.shift, examClassInShifts.get(ss.shift) + 1);
+            }
+            int numShift = 0;
+            for (Map.Entry<Integer, Integer> entry : examClassInShifts.entrySet()) {
+                if (entry.getValue() > 0)
+                    numShift++;
+            }
+            result += (numShift - 1) * 5;
+        }
+        //tính số tiết để trống
+        int[] shifts = {0, 0, 0, 0};
+        for (int i = 0; i < subjectSchedules.size(); i++) {
+            int shift = subjectSchedules.get(i).shift;
+            switch (shift) {
+                case 0:
+                    shifts[0] = shifts[0] + 1;
+                    break;
+                case 1:
+                    shifts[1] = shifts[1] + 1;
+                    break;
+                case 2:
+                    shifts[2] = shifts[2] + 1;
+                    break;
+                case 3:
+                    shifts[3] = shifts[3] + 1;
+                    break;
+            }
+        }
+        for (int s : shifts) {
+            if (s == 0) result += 30;
+        }
+        this.fitness = result;
+    }
+
     public List<Subject> generateSubjectSchedule() throws IOException {
         Random rd = new Random();
         List<ClassRoom> totalClassRoomTHList = this.getClassRoomTHList();
@@ -95,7 +147,7 @@ public class DateSchedule {
 //        System.out.println("Số lương phòng thi lý thuyết:" + remainClassRoomLTList.size());
         List<RegistrationClass> registrationClasses = getRegistrationClass();
 //        System.out.println("số lượng registrationClass:" + registrationClasses.size());
-        int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.5)) + 1;
+        int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.4)) + 1;
         List<Subject> preparedSubject = new ArrayList<>();
         List<Subject> remainSubject = new ArrayList<>(subjectList);
 //        System.out.println("Số lượng môn học còn lại:" + remainSubject.size());

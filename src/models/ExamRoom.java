@@ -10,6 +10,7 @@ public class ExamRoom {
     private ClassRoom room;//phòng học để tổ chức thi
     private int index;//thứ tự phòng được chia từ tổng sỉ số của lớp đó
     private int capacity;
+
     public RegistrationClass getRegistrationClass() {
         return registrationClass;
     }
@@ -41,11 +42,15 @@ public class ExamRoom {
     @Override
     public String toString() {
         return
-                 registrationClass.getName() +"-"+registrationClass.getId()+
-                ", " + room.getName() +
-                ", " + index +
-                ", " + capacity
+                registrationClass.getName() + "-" + registrationClass.getId() +
+                        ", " + room.getName() +
+                        ", " + index +
+                        ", " + capacity
                 ;
+    }
+//tính chỗ ngồi còn dư
+    public int remainSlot() {
+        return room.getCapacityExam() - capacity;
     }
 
     public void setCapacity(int capacity) {
