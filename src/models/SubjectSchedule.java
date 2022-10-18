@@ -5,6 +5,15 @@ Môn thi đã được sắp lịch
  */
 public class SubjectSchedule {
     private Subject subject;//môn thi
+
+    public ExamRoom getRoom() {
+        return room;
+    }
+
+    public void setRoom(ExamRoom room) {
+        this.room = room;
+    }
+
     private ExamRoom room;//phòng thi
      int shift;// ca thi 1,2,3,4
 

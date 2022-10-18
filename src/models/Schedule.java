@@ -14,6 +14,7 @@ import java.util.List;
 public class Schedule {
     private List<DateSchedule> dateScheduleList;
     double fitness;
+    int remainSubject;
 
     public void generateSchedule(List<Subject> subjectList, List<String> dates) throws IOException {
         List<DateSchedule> dateScheduleList = new ArrayList<>();
@@ -24,6 +25,7 @@ public class Schedule {
             remainSubjectList = ds.generateSubjectSchedule();
             dateScheduleList.add(ds);
         }
+        this.remainSubject = remainSubjectList.size();
         this.dateScheduleList = dateScheduleList;
     }
 
@@ -48,11 +50,15 @@ public class Schedule {
             examAmountDiifPerDay += dateScheduleList.get(i).subjectSchedules.size();
         }
         examAmountDiifPerDay /= dateScheduleList.size();
+
         for (int i = 0; i < dateScheduleList.size(); i++) {
             result += Math.abs(dateScheduleList.get(i).subjectSchedules.size() - examAmountDiifPerDay);
+            dateScheduleList.get(i).fitness();
+            result += dateScheduleList.get(i).fitness;
         }
         //////////////////////////
-
+        System.out.println("remain subject:" + remainSubject);
+        result += remainSubject * 1000;
 
         this.fitness = result;
     }
@@ -76,7 +82,8 @@ public class Schedule {
         for (int i = 0; i < dses.size(); i++) {
             System.out.println(dses.get(i).toString());
         }
-
+        s.fitness();
+        System.out.println("fitness: " + s.fitness);
     }
 
 

@@ -85,8 +85,13 @@ public class DateSchedule {
         return result;
     }
 
-    public void finess() {
+    public void fitness() {
         double result = 0;
+        //tính lỗi với chỗ dư của examclass đã được sắp xếp
+        for (int i = 0; i < subjectSchedules.size(); i++) {
+            result += subjectSchedules.get(i).getRoom().remainSlot();
+        }
+
 
         //tính số lượng ca thi của các lớp thi của 1 môn
         Set<String> subjectListInDate = new HashSet<>();
@@ -147,7 +152,7 @@ public class DateSchedule {
 //        System.out.println("Số lương phòng thi lý thuyết:" + remainClassRoomLTList.size());
         List<RegistrationClass> registrationClasses = getRegistrationClass();
 //        System.out.println("số lượng registrationClass:" + registrationClasses.size());
-        int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.4)) + 1;
+        int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.4)) + 2;
         List<Subject> preparedSubject = new ArrayList<>();
         List<Subject> remainSubject = new ArrayList<>(subjectList);
 //        System.out.println("Số lượng môn học còn lại:" + remainSubject.size());
@@ -177,8 +182,9 @@ public class DateSchedule {
                         if (s.getExamForms() == 1) {
 //                            if (usedList.size() > totalClassRoomTHList.size() * 4 - 1) {
                             if (usedListTH.size() > totalClassRoomTHList.size() * 4 - 1) {
-                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
-                                break subjectLoop;
+//                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
+                                remainSubject.add(preparedSubject.get(si));
+                                continue subjectLoop;
                             } else {
 //                            System.out.println("        là phòng thực hành:");
                                 index = rd.nextInt(remainClassRoomTHList.size());
@@ -224,11 +230,13 @@ public class DateSchedule {
                                     break shiftLoop;
                                 }
                             }
-                        } else if (s.getExamForms() == 0 || s.getExamForms() == 2) {
+                        }
+                        else if (s.getExamForms() == 0 || s.getExamForms() == 2) {
 //                            if (usedList.size() > totalClassRoomLTList.size() * 4 - 1) {
                             if (usedListLT.size() > totalClassRoomLTList.size() * 4 - 1) {
-                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
-                                break subjectLoop;
+//                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
+                                remainSubject.add(preparedSubject.get(si));
+                                continue subjectLoop;
                             } else {
 //                            System.out.println("        là phòng lý thuyết:");
                                 index = rd.nextInt(remainClassRoomLTList.size());
