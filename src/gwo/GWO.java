@@ -60,8 +60,45 @@ public class GWO {
         System.out.println("beta:" + beta.fitness);
         Schedule delta = schedules[2];
         System.out.println("delta:" + delta.fitness);
+        System.out.println("alpha");
+        for (Map.Entry<Subject, Set<String>> entry : alpha.getSubjectMap().entrySet()) {
+            System.out.print(entry.getKey().getName() + ":");
+            Set<String> set = entry.getValue();
+            for (String ss : set) {
+                System.out.print(ss + "-");
+            }
+            System.out.println();
+        }
+        System.out.println("beta");
+        for (Map.Entry<Subject, Set<String>> entry : beta.getSubjectMap().entrySet()) {
+            System.out.print(entry.getKey().getName() + ":");
+            Set<String> set = entry.getValue();
+            for (String ss : set) {
+                System.out.print(ss + "-");
+            }
+            System.out.println();
+        }
+        System.out.println("delta");
+        for (Map.Entry<Subject, Set<String>> entry : delta.getSubjectMap().entrySet()) {
+            System.out.print(entry.getKey().getName() + ":");
+            Set<String> set = entry.getValue();
+            for (String ss : set) {
+                System.out.print(ss + "-");
+            }
+            System.out.println();
+        }
+
 
         Schedule scheduleInPopulation = schedules[50];
+        System.out.println("scheduleInPopulation");
+        for (Map.Entry<Subject, Set<String>> entry : scheduleInPopulation.getSubjectMap().entrySet()) {
+            System.out.print(entry.getKey().getName() + ":");
+            Set<String> set = entry.getValue();
+            for (String ss : set) {
+                System.out.print(ss + "-");
+            }
+            System.out.println();
+        }
         System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness);
         List<DateSchedule> dses2 = scheduleInPopulation.getDateScheduleList();
         for (int i = 0; i < dses2.size(); i++) {
@@ -83,22 +120,35 @@ public class GWO {
             }
             System.out.println();
         }
-        Schedule clone = scheduleInPopulation.clone();
+        Schedule bestChange = scheduleInPopulation.clone();
         for (Map.Entry<Subject, Set<String>> entry : swapList) {
-            clone.changeSchedule(entry);
-            clone.fitness();
-            System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness + "--- clone:" + clone.fitness);
+            scheduleInPopulation.changeSchedule(entry);
+            scheduleInPopulation.fitness();
+            System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness + "--- bestChange:" + bestChange.fitness);
 
-            if (clone.fitness < scheduleInPopulation.fitness) {
-                scheduleInPopulation = clone.clone();
-                scheduleInPopulation.fitness();
+            if (scheduleInPopulation.fitness < bestChange.fitness) {
+                bestChange = scheduleInPopulation.clone();
+                bestChange.fitness();
             }
         }
+        scheduleInPopulation = bestChange.clone();
+        scheduleInPopulation.fitness();
         System.out.println(scheduleInPopulation.fitness);
+
+
         List<DateSchedule> dses = scheduleInPopulation.getDateScheduleList();
         for (int i = 0; i < dses.size(); i++) {
             System.out.println(dses.get(i).toString());
 
+        }
+        System.out.println("scheduleInPopulation after");
+        for (Map.Entry<Subject, Set<String>> entry : scheduleInPopulation.getSubjectMap().entrySet()) {
+            System.out.print(entry.getKey().getName() + ":");
+            Set<String> set = entry.getValue();
+            for (String ss : set) {
+                System.out.print(ss + "-");
+            }
+            System.out.println();
         }
         //        whileloop:
 //        while (iter < N_ITER) {

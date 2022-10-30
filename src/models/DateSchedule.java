@@ -57,32 +57,39 @@ public class DateSchedule {
         subjectSchedulesTmp.addAll(subjectSchedules);
         SubjectSchedule ss = null;
 //        System.out.println("prepare List before delete:" + preparedSubject.size());
-        for (int i = 0; i < subjectSchedulesTmp.size(); i++) {
+        int i = 0;
+        while (i < subjectSchedulesTmp.size()) {
             SubjectSchedule subjSche = subjectSchedulesTmp.get(i);
 //            System.out.println(subjSche.getSubject().getId() + "=" + s.getId());
             if (subjSche.getSubject().getId().equals(s.getId())) {
-                ss = subjSche;
+//                ss = subjSche;
+
                 for (int j = 0; j < usedListTH.size(); j++) {
-                    if (usedListTH.get(j)[1].equals(ss.getRoom().getRoom().getId())) {
+                    if (usedListTH.get(j)[1].equals(subjSche.getRoom().getRoom().getId()) && Integer.parseInt(usedListTH.get(j)[0]) == subjSche.shift) {
+                        System.out.println("remove "+usedListTH.get(j)[1]+"---"+usedListTH.get(j)[0]);
                         usedListTH.remove(j);
                         break;
                     }
                 }
                 for (int j = 0; j < usedListLT.size(); j++) {
-                    if (usedListLT.get(j)[1].equals(ss.getRoom().getRoom().getId())) {
+                    if (usedListLT.get(j)[1].equals(subjSche.getRoom().getRoom().getId()) && Integer.parseInt(usedListLT.get(j)[0]) == subjSche.shift) {
+                        System.out.println("remove "+usedListLT.get(j)[1]+"---"+usedListLT.get(j)[0]);
                         usedListLT.remove(j);
+
                         break;
                     }
                 }
                 subjectSchedulesTmp.remove(i--);
+
+//                System.out.println("remove "+subjSche.getSubject().getName()+" "+subjSche.toString());
             }
+            i++;
         }
-        if (ss != null) {
+        subjectList.add(s);
+        System.out.println("is contain sbject:"+subjectList.contains(s));
+        subjectMap.put(s, new HashSet<>());
+        subjectSchedules = new ArrayList<>(subjectSchedulesTmp);
 
-//            System.out.println("remove subject schedule indate:"+subjectSchedulesTmp.remove(ss));
-            subjectSchedules = subjectSchedulesTmp;
-
-        }
     }
 
     public List<ClassRoom> getClassRoomLTList() throws IOException {
@@ -132,11 +139,14 @@ public class DateSchedule {
 
     public List<RegistrationClass> getGroupClassOfSubject(List<RegistrationClass> rcs, Subject subject) {
         List<RegistrationClass> result = new ArrayList<>();
+        System.out.println("regist class size :"+rcs.size());
         for (RegistrationClass rc : rcs) {
-            if (rc.getSubject().equals(subject)) {
+            System.out.print(rc.toString()+"--");
+            if (rc.getSubject().getId().equals(subject.getId())) {
                 result.add(rc);
             }
         }
+        System.out.println();
         return result;
     }
 
@@ -198,9 +208,17 @@ public class DateSchedule {
 
     public void addNewSubject(Subject s) throws IOException {
         preparedSubject.add(s);
-//        System.out.println("remove success "+s.getName()+":"+remainSubject.remove(s));
-        if (preparedSubject.size() > 0)
-            generateSchedule();
+        System.out.println(preparedSubject.toString());
+        for(String[] sss:usedListTH){
+            System.out.print(sss[0]+"-"+sss[1]+",");
+        }
+        System.out.println();
+        for(String[] sss:usedListLT){
+            System.out.print(sss[0]+"-"+sss[1]+",");
+        }
+        System.out.println();
+
+            remainSubject=generateSchedule();
     }
 
 
@@ -208,12 +226,13 @@ public class DateSchedule {
         Random rd = new Random();
         List<ClassRoom> totalClassRoomTHList = this.getClassRoomTHList();
         List<ClassRoom> totalClassRoomLTList = this.getClassRoomLTList();
+        registrationClasses = getRegistrationClass();
         subjectLoop:
         for (int si = 0; si < preparedSubject.size(); si++) {
             Subject s = preparedSubject.get(si);
 //            System.out.println("generate schedule for subject:" + s.toString());
             List<RegistrationClass> groupSubject = getGroupClassOfSubject(registrationClasses, s);
-//            System.out.println("    number of group subject for " + s.getName() + " :" + groupSubject.size());
+            System.out.println("    number of group subject for " + s.getName() + " :" + groupSubject.size());
             for (RegistrationClass rs : groupSubject) {
 //                System.out.println("    group subject:" + rs.toString());
                 int numberOfStudent = rs.getEstimatedClassSizeReal();
@@ -284,7 +303,8 @@ public class DateSchedule {
                                     break shiftLoop;
                                 }
                             }
-                        } else if (s.getExamForms() == 0 || s.getExamForms() == 2) {
+                        }
+                        else if (s.getExamForms() == 0 || s.getExamForms() == 2) {
 //                            if (usedList.size() > totalClassRoomLTList.size() * 4 - 1) {
                             if (usedListLT.size() > totalClassRoomLTList.size() * 4 - 1) {
 //                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
@@ -360,7 +380,7 @@ public class DateSchedule {
 //        System.out.println("Số lượng phòng thi thực hành:" + remainClassRoomTHList.size());
         remainClassRoomLTList = this.getClassRoomLTList();
 //        System.out.println("Số lương phòng thi lý thuyết:" + remainClassRoomLTList.size());
-        registrationClasses = getRegistrationClass();
+
 //        System.out.println("số lượng registrationClass:" + registrationClasses.size());
         int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.4)) + 2;
 

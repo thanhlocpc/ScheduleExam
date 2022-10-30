@@ -93,12 +93,16 @@ public class Schedule implements Comparable<Schedule> {
         Subject subjectChange = subjectChangeEntry.getKey();
         for (DateSchedule ds : dateScheduleList) {
             if (ds.isContainSubject(subjectChange)) {
+//                System.out.println(ds.getDate());
                 ds.deleteSubject(subjectChange);
-                break;
+//                break;
             }
         }
         DateSchedule d = getDateScheduleByDate((String) dateChangeSet.toArray()[0]);
+        System.out.println("date to add:"+d.getDate());
+        System.out.println("ss size before:"+d.subjectSchedules.size());
         d.addNewSubject(subjectChange);
+        System.out.println("ss size after:"+d.subjectSchedules.size());
         this.fitness();
         System.out.println(subjectChange.getName() + " " + fitness);
     }
