@@ -139,14 +139,14 @@ public class DateSchedule {
 
     public List<RegistrationClass> getGroupClassOfSubject(List<RegistrationClass> rcs, Subject subject) {
         List<RegistrationClass> result = new ArrayList<>();
-        System.out.println("regist class size :"+rcs.size());
+//        System.out.println("regist class size :"+rcs.size());
         for (RegistrationClass rc : rcs) {
-            System.out.print(rc.toString()+"--");
+//            System.out.print(rc.toString()+"--");
             if (rc.getSubject().getId().equals(subject.getId())) {
                 result.add(rc);
             }
         }
-        System.out.println();
+//        System.out.println();
         return result;
     }
 
@@ -208,15 +208,15 @@ public class DateSchedule {
 
     public void addNewSubject(Subject s) throws IOException {
         preparedSubject.add(s);
-        System.out.println(preparedSubject.toString());
+        //System.out.println(preparedSubject.toString());
         for(String[] sss:usedListTH){
-            System.out.print(sss[0]+"-"+sss[1]+",");
+            //System.out.print(sss[0]+"-"+sss[1]+",");
         }
-        System.out.println();
+        //System.out.println();
         for(String[] sss:usedListLT){
-            System.out.print(sss[0]+"-"+sss[1]+",");
+            //System.out.print(sss[0]+"-"+sss[1]+",");
         }
-        System.out.println();
+        //System.out.println();
 
             remainSubject=generateSchedule();
     }
@@ -232,7 +232,7 @@ public class DateSchedule {
             Subject s = preparedSubject.get(si);
 //            System.out.println("generate schedule for subject:" + s.toString());
             List<RegistrationClass> groupSubject = getGroupClassOfSubject(registrationClasses, s);
-            System.out.println("    number of group subject for " + s.getName() + " :" + groupSubject.size());
+//            System.out.println("    number of group subject for " + s.getName() + " :" + groupSubject.size());
             for (RegistrationClass rs : groupSubject) {
 //                System.out.println("    group subject:" + rs.toString());
                 int numberOfStudent = rs.getEstimatedClassSizeReal();

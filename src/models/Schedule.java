@@ -16,6 +16,7 @@ public class Schedule implements Comparable<Schedule> {
     int remainSubject;
     List<Subject> subjectList;
     Map<Subject, Set<String>> subjectMap;
+    List<SubjectSchedule> totalSubjectSchedule;
 
     public Schedule(List<String> dates) throws IOException {
 
@@ -27,6 +28,57 @@ public class Schedule implements Comparable<Schedule> {
         generateSchedule(dates);
         fitness();
     }
+
+    public boolean isFinish() throws IOException {
+        totalSubjectSchedule = new ArrayList<>();
+
+        Map<String, Integer> check = new HashMap<>();
+        for(Subject s:subjectList){
+            check.put(s.getId(),0);
+        }
+        //list registration class
+        List<RegistrationClass> classRooms = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new FileReader("data/RegistrationClass"));
+        String line = reader.readLine();
+
+        while (line != null) {
+            String[] tokens = line.split(",");
+            Subject subject = null;
+            for (Subject s : subjectList) {
+                if (s.getId().equals(tokens[0].substring(0, tokens[0].lastIndexOf("-")))) {
+                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms());
+                    break;
+                }
+            }
+
+            if (subject != null){
+                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject));
+                int currentCap=check.get(subject.getId());
+                check.put(subject.getId(),currentCap+Integer.parseInt(tokens[3]));
+            }
+            line = reader.readLine();
+
+
+        }
+//
+
+        for (DateSchedule ds : dateScheduleList) {
+            totalSubjectSchedule.addAll(ds.subjectSchedules);
+        }
+        for(SubjectSchedule ss:totalSubjectSchedule){
+            String id=ss.getSubject().getId();
+            int numberOfStudent=ss.getRoom().getCapacity();
+            int oldNumber=check.get(id);
+            check.put(id,oldNumber-numberOfStudent);
+        }
+        int result=0;
+        for(Map.Entry<String,Integer> entry:check.entrySet()){
+            result+= entry.getValue();
+            System.out.println(entry.getKey()+" left:"+entry.getValue());
+        }
+        return result==0;
+    }
+
 
     public Schedule() {
 
@@ -98,15 +150,15 @@ public class Schedule implements Comparable<Schedule> {
 //                break;
             }
         }
+        if(dateChangeSet.toArray().length>0){
         DateSchedule d = getDateScheduleByDate((String) dateChangeSet.toArray()[0]);
-        System.out.println("date to add:"+d.getDate());
-        System.out.println("ss size before:"+d.subjectSchedules.size());
+        System.out.println("date to add:" + d.getDate());
+        System.out.println("ss size before:" + d.subjectSchedules.size());
         d.addNewSubject(subjectChange);
-        System.out.println("ss size after:"+d.subjectSchedules.size());
+        System.out.println("ss size after:" + d.subjectSchedules.size());}
         this.fitness();
         System.out.println(subjectChange.getName() + " " + fitness);
     }
-
 
 
     public void generateSchedule(List<String> dates) throws IOException {
@@ -134,6 +186,11 @@ public class Schedule implements Comparable<Schedule> {
         return subjectList;
     }
 
+    public boolean isAccepted() throws IOException {
+        System.out.println("remain subject:"+remainSubject);
+        return remainSubject == 0 && isFinish();
+    }
+
     public void fitness() {
         double result = 0;
 
@@ -151,7 +208,7 @@ public class Schedule implements Comparable<Schedule> {
         }
         //////////////////////////
 //        System.out.println("remain subject:" + remainSubject);
-        result += remainSubject * 1000;
+//        result += remainSubject * 1000;
 
         this.fitness = result;
     }
@@ -190,14 +247,20 @@ public class Schedule implements Comparable<Schedule> {
         Map<Subject, Set<String>> subjectMap = s.subjectMap;
         Subject sub = new Subject("214462", "Ltw", 4, 2);
         Set<String> set = subjectMap.get(sub);
-        System.out.println(set.size());
-
-//        for (Map.Entry<Subject, Set<String>> entry : s.subjectMap.entrySet()) {
-//            System.out.println(entry.getKey().getName());
-//            Set<String> set = entry.getValue();
-//            for (String ss : set) {
-//                System.out.println(ss);
+        //System.out.println(set.size());
+        s.isFinish();
+//        for (Map.Entry<Subject, Set<String>> entry : s.getSubjectMap().entrySet()) {
+//            System.out.print(entry.getKey().getName() + ":");
+//            Set<String> sets = entry.getValue();
+//            for (String ss : sets) {
+//                System.out.print(ss + "-");
 //            }
+//            System.out.println();
+//        }
+//        List<DateSchedule> dses2 = s.getDateScheduleList();
+//        for (int i = 0; i < dses2.size(); i++) {
+//            System.out.println(dses2.get(i).toString());
+//
 //        }
     }
 
