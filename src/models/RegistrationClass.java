@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author : Thành Lộc
@@ -11,6 +12,20 @@ import java.util.List;
 public class RegistrationClass {
     private String id;
     private String name;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegistrationClass that = (RegistrationClass) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, estimatedClassSize, estimatedClassSizeReal, listStudent, date, beginLearning, amountLearning, subject, classRoom);
+    }
+
     private int estimatedClassSize; // sĩ số lớp dự kiến
     private int estimatedClassSizeReal; // sĩ số lớp thực tế
     private List<Student> listStudent;

@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 /**
  * @author : Thành Lộc
  * @since : 10/7/2022, Fri
@@ -67,4 +69,16 @@ public class ClassRoom {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClassRoom classRoom = (ClassRoom) o;
+        return capacityBase == classRoom.capacityBase && capacityExam == classRoom.capacityExam && type == classRoom.type && Objects.equals(id, classRoom.id) && Objects.equals(name, classRoom.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, capacityBase, capacityExam, type);
+    }
 }
