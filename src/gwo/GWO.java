@@ -132,6 +132,7 @@ public class GWO {
                 Schedule bestChange = scheduleInPopulation.clone();
                 for (Map.Entry<Subject, Set<String>> entry : swapList) {
                     scheduleInPopulation.changeSchedule(entry);
+//                    scheduleInPopulation.findBestSchedule();
                     scheduleInPopulation.fitness();
                     System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness + "--- bestChange:" + bestChange.fitness);
 
@@ -167,14 +168,34 @@ public class GWO {
             }
         }
 
+
+        Schedule bestSchedultBeforeChange=alpha.clone();
+        bestSchedultBeforeChange.fitness();
+        alpha.findBestSchedule();
+        alpha.fitness();
         System.out.println("best iter:" + bestIter);
-        System.out.println("best schedule fitness:" + alpha.fitness);
-        System.out.println("is accepted:"+alpha.isAccepted());
-        List<DateSchedule> dses = alpha.getDateScheduleList();
+        System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
+        System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
+        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
         for (int i = 0; i < dses.size(); i++) {
             System.out.println(dses.get(i).toString());
 
         }
+
+        System.out.println("best schedule fitness with change date schedule:" + alpha.fitness);
+        System.out.println("is accepted:" + alpha.isAccepted());
+        List<DateSchedule> dses1 = alpha.getDateScheduleList();
+        for (int i = 0; i < dses1.size(); i++) {
+            System.out.println(dses1.get(i).toString());
+
+        }
+//        for (int i = 0; i < dses.size(); i++) {
+//            System.out.println("lt map " + i + ":");
+//            System.out.println(dses.get(i).getLtClassMap().toString());
+//            System.out.println("th map " + i + ":");
+//            System.out.println(dses.get(i).getThClassMap().toString());
+//
+//        }
 //        System.out.println("scheduleInPopulation after");
 //        for (Map.Entry<Subject, Set<String>> entry : scheduleInPopulation.getSubjectMap().entrySet()) {
 //            System.out.print(entry.getKey().getName() + ":");
