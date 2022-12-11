@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author : Thành Lộc
@@ -11,9 +12,24 @@ import java.util.List;
 public class RegistrationClass {
     private String id;
     private String name;
+    private Grade grade;
     private int estimatedClassSize; // sĩ số lớp dự kiến
     private int estimatedClassSizeReal; // sĩ số lớp thực tế
     private List<Student> listStudent;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegistrationClass that = (RegistrationClass) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, estimatedClassSize, estimatedClassSizeReal, listStudent, date, beginLearning, amountLearning, subject, classRoom);
+    }
 
     @Override
     public String toString() {
@@ -23,6 +39,14 @@ public class RegistrationClass {
                 ", estimatedClassSize=" + estimatedClassSize +
                 ", estimatedClassSizeReal=" + estimatedClassSizeReal +
                 '}';
+    }
+
+    public Grade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
     }
 
     public String getId() {
@@ -103,11 +127,12 @@ public class RegistrationClass {
     private Subject subject;//môn học của học phần này
     private ClassRoom classRoom; // lớp này học phòng này
 
-    public RegistrationClass(String id, String name, int estimatedClassSize, int estimatedClassSizeReal, Subject subject) {
+    public RegistrationClass(String id, String name, int estimatedClassSize, int estimatedClassSizeReal, Subject subject, Grade grade) {
         this.id = id;
         this.name = name;
         this.estimatedClassSize = estimatedClassSize;
         this.estimatedClassSizeReal = estimatedClassSizeReal;
         this.subject = subject;
+        this.grade = grade;
     }
 }

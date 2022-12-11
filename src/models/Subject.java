@@ -41,7 +41,10 @@ public class Subject {
         Subject other = (Subject) obj;
         return this.id.equals(other.getId());
 
-
+    }
+    @Override
+    public int hashCode() {
+        return Integer.parseInt(this.id);
     }
 
     public String getId() {

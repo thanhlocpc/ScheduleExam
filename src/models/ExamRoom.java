@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 /*
 lớp thi được chia nhỏ từ lớp gốc
 VD: LTM DH20DTA  có 103 sinh viên được chia thành những lớp thi có sức chứa 30 sinh viên. Chia thành 4 lớp thi gồm
@@ -9,6 +11,7 @@ public class ExamRoom {
     private RegistrationClass registrationClass;//môn học
     private ClassRoom room;//phòng học để tổ chức thi
     private int index;//thứ tự phòng được chia từ tổng sỉ số của lớp đó
+    private int capacity;
 
     public RegistrationClass getRegistrationClass() {
         return registrationClass;
@@ -40,10 +43,38 @@ public class ExamRoom {
 
     @Override
     public String toString() {
-        return "ExamRoom{" +
-                "registrationClass=" + registrationClass +
-                ", room=" + room +
-                ", index=" + index +
-                '}';
+        return
+                registrationClass.getName() + "-" + registrationClass.getId() +
+                        ", " + registrationClass.getGrade().getName() +
+                        ", " + room.getName() +
+                        ", " + index +
+                        ", " + capacity
+                ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExamRoom examRoom = (ExamRoom) o;
+        return index == examRoom.index && capacity == examRoom.capacity && Objects.equals(registrationClass, examRoom.registrationClass) ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(registrationClass, room, index, capacity);
+    }
+
+    //tính chỗ ngồi còn dư
+    public int remainSlot() {
+        return room.getCapacityExam() - capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 }
