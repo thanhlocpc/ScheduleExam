@@ -12,6 +12,11 @@ import java.util.Objects;
 public class RegistrationClass {
     private String id;
     private String name;
+    private Grade grade;
+    private int estimatedClassSize; // sĩ số lớp dự kiến
+    private int estimatedClassSizeReal; // sĩ số lớp thực tế
+    private List<Student> listStudent;
+
 
     @Override
     public boolean equals(Object o) {
@@ -26,10 +31,6 @@ public class RegistrationClass {
         return Objects.hash(id, name, estimatedClassSize, estimatedClassSizeReal, listStudent, date, beginLearning, amountLearning, subject, classRoom);
     }
 
-    private int estimatedClassSize; // sĩ số lớp dự kiến
-    private int estimatedClassSizeReal; // sĩ số lớp thực tế
-    private List<Student> listStudent;
-
     @Override
     public String toString() {
         return "RegistrationClass{" +
@@ -38,6 +39,14 @@ public class RegistrationClass {
                 ", estimatedClassSize=" + estimatedClassSize +
                 ", estimatedClassSizeReal=" + estimatedClassSizeReal +
                 '}';
+    }
+
+    public Grade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
     }
 
     public String getId() {
@@ -118,11 +127,12 @@ public class RegistrationClass {
     private Subject subject;//môn học của học phần này
     private ClassRoom classRoom; // lớp này học phòng này
 
-    public RegistrationClass(String id, String name, int estimatedClassSize, int estimatedClassSizeReal, Subject subject) {
+    public RegistrationClass(String id, String name, int estimatedClassSize, int estimatedClassSizeReal, Subject subject, Grade grade) {
         this.id = id;
         this.name = name;
         this.estimatedClassSize = estimatedClassSize;
         this.estimatedClassSizeReal = estimatedClassSizeReal;
         this.subject = subject;
+        this.grade = grade;
     }
 }

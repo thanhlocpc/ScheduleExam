@@ -5,7 +5,7 @@ import java.util.Objects;
 /*
 Môn thi đã được sắp lịch
  */
-public class SubjectSchedule {
+public class SubjectSchedule implements Comparable<SubjectSchedule> {
     private Subject subject;//môn thi
 
     public ExamRoom getRoom() {
@@ -29,7 +29,7 @@ public class SubjectSchedule {
     }
 
     private ExamRoom room;//phòng thi
-     int shift;// ca thi 1,2,3,4
+    int shift;// ca thi 1,2,3,4
 
     public SubjectSchedule(Subject subject, ExamRoom room, int shift) {
         this.subject = subject;
@@ -39,8 +39,8 @@ public class SubjectSchedule {
 
     @Override
     public String toString() {
-        return   room +
-                ", " + (shift+1)
+        return room +
+                ", " + (shift + 1)
                 ;
     }
 
@@ -49,7 +49,7 @@ public class SubjectSchedule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SubjectSchedule that = (SubjectSchedule) o;
-        return  Objects.equals(subject, that.subject) && Objects.equals(room, that.room);
+        return Objects.equals(subject, that.subject) && Objects.equals(room, that.room);
     }
 
     @Override
@@ -59,5 +59,14 @@ public class SubjectSchedule {
 
     public Subject getSubject() {
         return subject;
+    }
+
+    @Override
+    public int compareTo(SubjectSchedule o2) {
+        if (this.getSubject().getId().equals(o2.getSubject().getId())) {
+            return this.shift - o2.shift;
+        } else {
+            return String.CASE_INSENSITIVE_ORDER.compare(this.getSubject().getId(), o2.getSubject().getId());
+        }
     }
 }

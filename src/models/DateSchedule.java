@@ -323,7 +323,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
                 }
             }
             if (subject != null)
-                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject));
+                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject, new Grade(tokens[4],tokens[4])));
             line = reader.readLine();
         }
         return classRooms;
@@ -624,12 +624,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
 
     public String toString() {
         String s = date + "\n";
-        Collections.sort(subjectSchedules, new Comparator<SubjectSchedule>() {
-            @Override
-            public int compare(SubjectSchedule o1, SubjectSchedule o2) {
-                return o1.shift - o2.shift;
-            }
-        });
+        Collections.sort(subjectSchedules);
         for (SubjectSchedule ss : subjectSchedules) {
             s += (ss.toString() + "\n");
         }

@@ -45,6 +45,7 @@ public class ExamRoom {
     public String toString() {
         return
                 registrationClass.getName() + "-" + registrationClass.getId() +
+                        ", " + registrationClass.getGrade().getName() +
                         ", " + room.getName() +
                         ", " + index +
                         ", " + capacity

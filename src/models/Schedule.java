@@ -8,7 +8,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /*
- * lịch thi
+ * lịch thi gồm:
+ * - danh sách lích thi theo ngày
+ * - fitness
  *
  */
 public class Schedule implements Comparable<Schedule> {
@@ -53,7 +55,8 @@ public class Schedule implements Comparable<Schedule> {
             }
 
             if (subject != null) {
-                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject));
+                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]),
+                        Integer.parseInt(tokens[3]), subject,new Grade(tokens[4],tokens[4])));
                 int currentCap = check.get(subject.getId());
                 check.put(subject.getId(), currentCap + Integer.parseInt(tokens[3]));
             }
@@ -356,9 +359,89 @@ public class Schedule implements Comparable<Schedule> {
             dateScheduleList.get(i).fitness();
             result += dateScheduleList.get(i).fitness;
         }
-        //////////////////////////
-//        System.out.println("remain subject:" + remainSubject);
-//        result += remainSubject * 1000;
+
+        // không sắp xếp ca thi rời rạc, làm khó cán bộ coi thi
+        // ca 1: 5 phòng thi
+        // ca 2: 1 phòng thi
+        // ca 3: 5 phòng thi
+        // weight:
+        // -1 * 11
+
+        // ca 1: 5 phòng thi
+        // ca 2: 5 phòng thi
+        // ca 3: 1 phòng thi
+        // weight: (5 - 5) - (5- 1) = -4
+        // -1 * 11
+
+        // ca 1: 5 phòng thi
+        // ca 2: 5 phòng thi
+        // ca 3: 4 phòng thi
+        // ca 4: 5 phòng thi
+        // weight: (5 - 5) - (5- 1) - (1- 5)=  0
+        // -6 * 16
+        for (int i = 0; i < dateScheduleList.size(); i++) {
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
+            Map<Integer, Integer> mapCountRoomOfShift = new HashMap<>();
+            newSubjectSchedules.stream().forEach(e->{
+                if(mapCountRoomOfShift.get(e.getShift()) !=  null){
+                    mapCountRoomOfShift.put(e.shift, mapCountRoomOfShift.get(e.shift) + 1);
+                }else{
+                    mapCountRoomOfShift.put(e.shift, 1);
+                }
+            });
+
+            // tính weight
+            int weight = 0;
+            boolean isASC = true;
+            int min = Integer.MAX_VALUE;
+            for (Map.Entry<Integer, Integer> entry: mapCountRoomOfShift.entrySet()){
+                if(entry.getValue() / 2 != 0){
+                    isASC = false;
+                    weight = dateScheduleList.get(i).subjectSchedules.size()*15;
+                    break;
+                }
+                if(entry.getValue() <= min){
+                    min = entry.getValue();
+                }else{
+                    isASC = false;
+                    weight = dateScheduleList.get(i).subjectSchedules.size()*15;
+                    break;
+                }
+
+
+            };
+            if(isASC) weight = 0;
+            result += weight;
+        }
+
+
+        // một ngày 1 khối lớp không nên cho thi nhiều môn, tối đa 2 môn
+        for (int i = 0; i < dateScheduleList.size(); i++) {
+
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
+
+            Map<String, Set<String>> mapCountRoomOfShift = new HashMap<>();
+            newSubjectSchedules.stream().forEach(e->{
+                if(mapCountRoomOfShift.get(e.getRoom().getRegistrationClass().getGrade().getId()) !=  null){
+                    mapCountRoomOfShift.get(e.getRoom().getRegistrationClass().getGrade().getId()).add(e.getSubject().getId());
+                }else{
+                    Set<String> subs = new HashSet<>();
+                    subs.add(e.getSubject().getId());
+                    mapCountRoomOfShift.put(e.getRoom().getRegistrationClass().getGrade().getId(), subs);
+                }
+            });
+
+            int weight = 0;
+            for (Map.Entry<String, Set<String>> entry: mapCountRoomOfShift.entrySet()){
+                if(entry.getValue().size() > 1){
+                    weight += dateScheduleList.get(i).subjectSchedules.size() * 150;
+                }
+
+            };
+            result += weight;
+
+        }
+
 
         this.fitness = result;
     }
