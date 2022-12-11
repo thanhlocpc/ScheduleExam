@@ -420,19 +420,19 @@ public class Schedule implements Comparable<Schedule> {
 
             List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
 
-            Map<String, Set<String>> mapCountRoomOfShift = new HashMap<>();
+            Map<String, Set<String>> mapCountSubjectOfGrade = new HashMap<>();
             newSubjectSchedules.stream().forEach(e->{
-                if(mapCountRoomOfShift.get(e.getRoom().getRegistrationClass().getGrade().getId()) !=  null){
-                    mapCountRoomOfShift.get(e.getRoom().getRegistrationClass().getGrade().getId()).add(e.getSubject().getId());
+                if(mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()) !=  null){
+                    mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()).add(e.getSubject().getId());
                 }else{
                     Set<String> subs = new HashSet<>();
                     subs.add(e.getSubject().getId());
-                    mapCountRoomOfShift.put(e.getRoom().getRegistrationClass().getGrade().getId(), subs);
+                    mapCountSubjectOfGrade.put(e.getRoom().getRegistrationClass().getGrade().getId(), subs);
                 }
             });
 
             int weight = 0;
-            for (Map.Entry<String, Set<String>> entry: mapCountRoomOfShift.entrySet()){
+            for (Map.Entry<String, Set<String>> entry: mapCountSubjectOfGrade.entrySet()){
                 if(entry.getValue().size() > 1){
                     weight += dateScheduleList.get(i).subjectSchedules.size() * 150;
                 }
