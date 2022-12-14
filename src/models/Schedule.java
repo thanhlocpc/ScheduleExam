@@ -347,18 +347,18 @@ public class Schedule implements Comparable<Schedule> {
     public void fitness() {
         double result = 0;
 
-        //tính sự chênh lêch số tiết thi giữa các ngày thi
-        double examAmountDiifPerDay = 0;
-        for (int i = 0; i < dateScheduleList.size(); i++) {
-            examAmountDiifPerDay += dateScheduleList.get(i).subjectSchedules.size();
-        }
-        examAmountDiifPerDay /= dateScheduleList.size();
-
-        for (int i = 0; i < dateScheduleList.size(); i++) {
-            result += Math.abs(dateScheduleList.get(i).subjectSchedules.size() - examAmountDiifPerDay);
-            dateScheduleList.get(i).fitness();
-            result += dateScheduleList.get(i).fitness;
-        }
+//        //tính sự chênh lêch số tiết thi giữa các ngày thi
+//        double examAmountDiifPerDay = 0;
+//        for (int i = 0; i < dateScheduleList.size(); i++) {
+//            examAmountDiifPerDay += dateScheduleList.get(i).subjectSchedules.size();
+//        }
+//        examAmountDiifPerDay /= dateScheduleList.size();
+//
+//        for (int i = 0; i < dateScheduleList.size(); i++) {
+//            result += Math.abs(dateScheduleList.get(i).subjectSchedules.size() - examAmountDiifPerDay);
+//            dateScheduleList.get(i).fitness();
+//            result += dateScheduleList.get(i).fitness;
+//        }
 
         // không sắp xếp ca thi rời rạc, làm khó cán bộ coi thi
         // ca 1: 5 phòng thi
@@ -397,18 +397,14 @@ public class Schedule implements Comparable<Schedule> {
             for (Map.Entry<Integer, Integer> entry: mapCountRoomOfShift.entrySet()){
                 if(entry.getValue() / 2 != 0){
                     isASC = false;
-                    weight = dateScheduleList.get(i).subjectSchedules.size()*15;
-                    break;
+                    weight += 50;
                 }
                 if(entry.getValue() <= min){
                     min = entry.getValue();
                 }else{
                     isASC = false;
-                    weight = dateScheduleList.get(i).subjectSchedules.size()*15;
-                    break;
+                    weight += 450;
                 }
-
-
             };
             if(isASC) weight = 0;
             result += weight;
@@ -416,6 +412,7 @@ public class Schedule implements Comparable<Schedule> {
 
 
         // một ngày 1 khối lớp không nên cho thi nhiều môn, tối đa 2 môn
+        // đếm số môn thi của 1 khối lớp trong ngày
         for (int i = 0; i < dateScheduleList.size(); i++) {
 
             List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
@@ -433,13 +430,63 @@ public class Schedule implements Comparable<Schedule> {
 
             int weight = 0;
             for (Map.Entry<String, Set<String>> entry: mapCountSubjectOfGrade.entrySet()){
-                if(entry.getValue().size() > 1){
-                    weight += dateScheduleList.get(i).subjectSchedules.size() * 150;
+                // 1 học sinh thi lớn hơn 1 môn trên ngày
+                if(entry.getValue().size() > 2){
+                    weight += 1500;
+                }else if(entry.getValue().size() > 1){
+                    weight += 500;
+                }
+            };
+            result += weight;
+        }
+
+        // 1 môn thi không nên chia quá ít phòng thi trong 1 ca thi
+        // vd: khi chia 1 môn làm 3 ca thi, mỗi ca thi 2 phòng
+        // đếm số phòng thi của môn đó, trong ngày đó
+        // đếm số ca thi của môn đó trong ngày đó
+        // 1 ca thi của 1 môn phải tối thiếu đạt 25%: ca 1: 4phong, ca2: 3 phong, ca3: 3phongf
+        // môn thi A: thi 3 ca, mỗi ca có 5 phòng => tối đa cho môn này là 15 phòng
+        // bắt buộc mỗi ca thi của môn nào đó phải đạt tối thiểu 4 phòng thi, đối với môn thi có tổng số phòng thi >4 (môn lý thuyết)
+        // nhỏ hơn 4 thì phải chung 1 ca thi
+        for (int i = 0; i < dateScheduleList.size(); i++) {
+
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
+
+            Map<String, Integer> mapCountRoomOfSubject = new HashMap<>();
+            Map<String, Set<Integer>> mapCountShiftOfSubject = new HashMap<>();
+            newSubjectSchedules.stream().forEach(e->{
+                if(mapCountRoomOfSubject.get(e.getSubject().getId()) !=  null){
+                    mapCountRoomOfSubject.put(e.getSubject().getId(), mapCountRoomOfSubject.get(e.getSubject().getId())+1);
+                }else{
+                    mapCountRoomOfSubject.put(e.getSubject().getId(), 1);
+                }
+
+                if(mapCountShiftOfSubject.get(e.getSubject().getId()) !=  null){
+                    mapCountShiftOfSubject.get(e.getSubject().getId()).add(e.getShift());
+                }else{
+                    Set<Integer> shifts = new HashSet<>();
+                    shifts.add(e.getShift());
+                    mapCountShiftOfSubject.put(e.getSubject().getId(),shifts);
+
+                }
+            });
+
+            int weight = 0;
+            for (Map.Entry<String, Integer> entry: mapCountRoomOfSubject.entrySet()){
+                // nếu môn này có tổng số phòng thi > 4
+                // thì xem số ca thi có hợp lí hay không
+                if(entry.getValue() > 4){
+                    if(entry.getValue() / mapCountShiftOfSubject.get(entry.getKey()).size() <= 3){
+                        weight += 450;
+                    }
+                }else{
+                    if(mapCountShiftOfSubject.get(entry.getKey()).size() > 1){
+                        weight += 600;
+                    }
                 }
 
             };
             result += weight;
-
         }
 
 
