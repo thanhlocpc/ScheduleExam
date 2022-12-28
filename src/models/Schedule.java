@@ -476,20 +476,17 @@ public class Schedule implements Comparable<Schedule> {
                 // nếu môn này có tổng số phòng thi > 4
                 // thì xem số ca thi có hợp lí hay không
                 if(entry.getValue() > 4){
-                    if(entry.getValue() / mapCountShiftOfSubject.get(entry.getKey()).size() <= 3){
-                        weight += 450;
+                    if(entry.getValue() / mapCountShiftOfSubject.get(entry.getKey()).size() < 3.1){
+                        weight += 500;
                     }
                 }else{
                     if(mapCountShiftOfSubject.get(entry.getKey()).size() > 1){
-                        weight += 600;
+                        weight += 1500;
                     }
                 }
-
             };
             result += weight;
         }
-
-
         this.fitness = result;
     }
 

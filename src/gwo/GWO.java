@@ -28,6 +28,9 @@ public class GWO {
         return schedules;
     }
 
+    /*
+     * Map.Entry<Subject, Set<String>> : set<String>: ds các ngày xếp lịch thi của môn đó
+     */
     public List<Map.Entry<Subject, Set<String>>> swapSquence(Schedule a, Schedule b) {
         List<Map.Entry<Subject, Set<String>>> aList = new ArrayList<>(a.getSubjectMap().entrySet());
         List<Map.Entry<Subject, Set<String>>> bList = new ArrayList<>(b.getSubjectMap().entrySet());
@@ -224,6 +227,7 @@ public class GWO {
         dates.add("15/10/2022");
         dates.add("16/10/2022");
         dates.add("17/10/2022");
+        dates.add("18/10/2022");
         GWO gwo = new GWO(dates);
         Schedule[] schedules = gwo.createPopulation();
 //        for (Schedule s : schedules) {
