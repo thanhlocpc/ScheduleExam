@@ -40,7 +40,7 @@ public class SubjectSchedule implements Comparable<SubjectSchedule> {
     @Override
     public String toString() {
         return room +
-                ", " + (shift + 1)
+                ", ca:" + (shift + 1)
                 ;
     }
 

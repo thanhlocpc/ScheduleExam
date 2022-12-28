@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*
 Lịch thi theo ngày
@@ -108,7 +109,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
 //            System.out.println("not null both");
             ExamRoom er1 = ss1.getRoom();
             int shift1 = ss1.shift;
-            Subject subject1=ss1.getSubject();
+            Subject subject1 = ss1.getSubject();
             ss1.setRoom(ss2.getRoom());
             ss1.setShift(ss2.getShift());
             ss1.setSubject(ss2.getSubject());
@@ -216,7 +217,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
 
                 for (int j = 0; j < usedListTH.size(); j++) {
                     if (usedListTH.get(j)[1].equals(subjSche.getRoom().getRoom().getId()) && Integer.parseInt(usedListTH.get(j)[0]) == subjSche.shift) {
-                        System.out.println("remove " + usedListTH.get(j)[1] + "---" + usedListTH.get(j)[0]);
+//                        System.out.println("remove " + usedListTH.get(j)[1] + "---" + usedListTH.get(j)[0]);
                         thClassMap.put(usedListTH.get(j)[1] + "-" + usedListTH.get(j)[0], null);
                         usedListTH.remove(j);
                         break;
@@ -224,7 +225,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
                 }
                 for (int j = 0; j < usedListLT.size(); j++) {
                     if (usedListLT.get(j)[1].equals(subjSche.getRoom().getRoom().getId()) && Integer.parseInt(usedListLT.get(j)[0]) == subjSche.shift) {
-                        System.out.println("remove " + usedListLT.get(j)[1] + "---" + usedListLT.get(j)[0]);
+//                        System.out.println("remove " + usedListLT.get(j)[1] + "---" + usedListLT.get(j)[0]);
                         ltClassMap.put(usedListLT.get(j)[1] + "-" + usedListLT.get(j)[0], null);
                         usedListLT.remove(j);
 
@@ -238,7 +239,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
             i++;
         }
         subjectList.add(s);
-        System.out.println("is contain sbject:" + subjectList.contains(s));
+//        System.out.println("is contain sbject:" + subjectList.contains(s));
         subjectMap.put(s, new HashSet<>());
         subjectSchedules = new ArrayList<>(subjectSchedulesTmp);
 
@@ -323,7 +324,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
                 }
             }
             if (subject != null)
-                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject, new Grade(tokens[4],tokens[4])));
+                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject, new Grade(tokens[4], tokens[4])));
             line = reader.readLine();
         }
         return classRooms;
@@ -456,6 +457,9 @@ public class DateSchedule implements Comparable<DateSchedule> {
                     for (int i = 0; i < 4; i++) {
                         ClassRoom cl = null;
                         int index = -1;
+                        // một môn thi, ưu tiên thi trong 1 ngày,
+                        // môn thi lt 1 ca thi tối đa 6 phòng, môn thi thực hành 1 ca 4 phòng
+                        int totalClassRoomUsedForShift = 0;
                         if (s.getExamForms() == 1) {
 //                            if (usedList.size() > totalClassRoomTHList.size() * 4 - 1) {
                             if (usedListTH.size() > totalClassRoomTHList.size() * 4 - 1) {
@@ -464,60 +468,96 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                 continue subjectLoop;
                             } else {
 //                            System.out.println("        là phòng thực hành:");
-                                index = rd.nextInt(remainClassRoomTHList.size());
-                                cl = remainClassRoomTHList.get(index);
-                                if (usedListTH.size() == 0) {
-                                    ex.setRoom(cl);
-                                    ex.setIndex(examRoomIndex++);
-                                    if (numberOfStudent > cl.getCapacityExam()) {
-                                        ex.setCapacity(cl.getCapacityExam());
-                                        numberOfStudent -= cl.getCapacityExam();
-                                    } else {
-                                        ex.setCapacity(numberOfStudent);
-                                        numberOfStudent = 0;
-                                    }
-                                    SubjectSchedule ss = new SubjectSchedule(s, ex, i);
-                                    subjectSchedules.add(ss);
-                                    usedListTH.add(new String[]{i + "", cl.getId()});
-                                    Set<String> set = subjectMap.get(s);
+                                loopFindClass:
+                                while (true) {
+                                    index = rd.nextInt(remainClassRoomTHList.size());
+                                    cl = remainClassRoomTHList.get(index);
+                                    if (usedListTH.size() == 0) {
+                                        ex.setRoom(cl);
+                                        ex.setIndex(examRoomIndex++);
+                                        if (numberOfStudent > cl.getCapacityExam()) {
+                                            ex.setCapacity(cl.getCapacityExam());
+                                            numberOfStudent -= cl.getCapacityExam();
+                                        } else {
+                                            ex.setCapacity(numberOfStudent);
+                                            numberOfStudent = 0;
+                                        }
+                                        try {
+                                            SubjectSchedule ss = new SubjectSchedule(s, ex.clone(), i);
+                                            subjectSchedules.add(ss);
+                                            usedListTH.add(new String[]{i + "", cl.getId()});
+                                            Set<String> set = subjectMap.get(s);
 //                                    System.out.println("subject map size:"+subjectMap.size());
 //                                    System.out.println(s + " " + (set == null));
-                                    set.add(this.date);
-                                    subjectMap.put(s, set);
-                                    thClassMap.put(cl.getName() + "-" + i, ss);
-                                    break shiftLoop;
-                                } else {
-                                    usedListLoop:
-                                    for (int j = 0; j < usedListTH.size(); j++) {
-//                                System.out.println("            usedList " + j + " :" + usedList.get(j)[0] + "-" + usedList.get(j)[1]);
-                                        if (Integer.parseInt(usedListTH.get(j)[0]) == i) {
-                                            if (usedListTH.get(j)[1].compareTo(cl.getId()) == 0) {
-//                                        System.out.println("            ca thi " + i + " và lớp " + cl.getId() + " đã dùng");
-                                                continue shiftLoop;
-                                            }
+                                            set.add(this.date);
+                                            subjectMap.put(s, set);
+                                            thClassMap.put(cl.getName() + "-" + i, ss);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
 
-                                    }
-                                    ex.setRoom(cl);
-                                    ex.setIndex(examRoomIndex++);
-                                    if (numberOfStudent > cl.getCapacityExam()) {
-                                        ex.setCapacity(cl.getCapacityExam());
-                                        numberOfStudent -= cl.getCapacityExam();
+                                        totalClassRoomUsedForShift++;
+                                        if (numberOfStudent == 0) {
+                                            break shiftLoop;
+                                        }
+                                        if (totalClassRoomUsedForShift == 4) {
+                                            break loopFindClass;
+                                        }
                                     } else {
-                                        ex.setCapacity(numberOfStudent);
-                                        numberOfStudent = 0;
-                                    }
-                                    SubjectSchedule ss = new SubjectSchedule(s, ex, i);
-                                    subjectSchedules.add(ss);
-                                    usedListTH.add(new String[]{i + "", cl.getId()});
-                                    Set<String> set = subjectMap.get(s);
+                                        usedListLoop:
+                                        for (int j = 0; j < usedListTH.size(); j++) {
+//                                System.out.println("            usedList " + j + " :" + usedList.get(j)[0] + "-" + usedList.get(j)[1]);
+                                            if (Integer.parseInt(usedListTH.get(j)[0]) == i) {
+                                                if (usedListTH.size() > totalClassRoomTHList.size() * 4 - 1) {
+                                                    remainSubject.add(preparedSubject.get(si));
+                                                    continue subjectLoop;
+                                                }
+                                                if (usedListTH.get(j)[1].compareTo(cl.getId()) == 0) {
+//                                        System.out.println("            ca thi " + i + " và lớp " + cl.getId() + " đã dùng");
+                                                    final int shift = i;
+                                                    if (usedListTH.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList()).size() == totalClassRoomTHList.size()) {
+                                                        continue shiftLoop;
+                                                    } else {
+                                                        continue loopFindClass;
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                        try{
+                                            ex.setRoom(cl);
+                                            ex.setIndex(examRoomIndex++);
+                                            if (numberOfStudent > cl.getCapacityExam()) {
+                                                ex.setCapacity(cl.getCapacityExam());
+                                                numberOfStudent -= cl.getCapacityExam();
+                                            } else {
+                                                ex.setCapacity(numberOfStudent);
+                                                numberOfStudent = 0;
+                                            }
+                                            SubjectSchedule ss = new SubjectSchedule(s, ex.clone(), i);
+                                            subjectSchedules.add(ss);
+                                            usedListTH.add(new String[]{i + "", cl.getId()});
+                                            Set<String> set = subjectMap.get(s);
 //                                    System.out.println("subject map size:"+subjectMap.size());
 //                                    System.out.println(s + " " + (set == null));
-                                    set.add(this.date);
-                                    subjectMap.put(s, set);
-                                    thClassMap.put(cl.getName() + "-" + i, ss);
-                                    break shiftLoop;
+                                            set.add(this.date);
+                                            subjectMap.put(s, set);
+                                            thClassMap.put(cl.getName() + "-" + i, ss);
+
+                                            totalClassRoomUsedForShift++;
+                                            if (numberOfStudent == 0) {
+                                                break shiftLoop;
+                                            }
+                                            if (totalClassRoomUsedForShift == 4) {
+                                                break loopFindClass;
+                                            }
+                                        }catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+                                    }
                                 }
+
+//                                System.out.println("fd");
                             }
                         } else if (s.getExamForms() == 0 || s.getExamForms() == 2) {
 //                            if (usedList.size() > totalClassRoomLTList.size() * 4 - 1) {
@@ -527,59 +567,94 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                 continue subjectLoop;
                             } else {
 //                            System.out.println("        là phòng lý thuyết:");
-                                index = rd.nextInt(remainClassRoomLTList.size());
-                                cl = remainClassRoomLTList.get(index);
-                                if (usedListLT.size() == 0) {
-                                    ex.setRoom(cl);
-                                    ex.setIndex(examRoomIndex++);
-                                    if (numberOfStudent > cl.getCapacityExam()) {
-                                        ex.setCapacity(cl.getCapacityExam());
-                                        numberOfStudent -= cl.getCapacityExam();
-                                    } else {
-                                        ex.setCapacity(numberOfStudent);
-                                        numberOfStudent = 0;
-                                    }
-                                    SubjectSchedule ss = new SubjectSchedule(s, ex, i);
-                                    subjectSchedules.add(ss);
-                                    usedListLT.add(new String[]{i + "", cl.getId()});
-                                    Set<String> set = subjectMap.get(s);
-//                                    System.out.println("subject map size:"+subjectMap.size());
-//                                    System.out.println(s + " " + (set == null));
-                                    set.add(this.date);
-                                    subjectMap.put(s, set);
-                                    ltClassMap.put(cl.getName() + "-" + i, ss);
-                                    break shiftLoop;
-                                } else {
-                                    usedListLoop:
-                                    for (int j = 0; j < usedListLT.size(); j++) {
-//                                System.out.println("            usedList " + j + " :" + usedList.get(j)[0] + "-" + usedList.get(j)[1]);
-                                        if (Integer.parseInt(usedListLT.get(j)[0]) == i) {
-                                            if (usedListLT.get(j)[1].compareTo(cl.getId()) == 0) {
-//                                        System.out.println("            ca thi " + i + " và lớp " + cl.getId() + " đã dùng");
-                                                continue shiftLoop;
+                                loopFindClass:
+                                while (true) {
+                                    index = rd.nextInt(remainClassRoomLTList.size());
+                                    cl = remainClassRoomLTList.get(index);
+                                    if (usedListLT.size() == 0) {
+                                        try {
+                                            ex.setRoom(cl);
+                                            ex.setIndex(examRoomIndex++);
+                                            if (numberOfStudent > cl.getCapacityExam()) {
+                                                ex.setCapacity(cl.getCapacityExam());
+                                                numberOfStudent -= cl.getCapacityExam();
+                                            } else {
+                                                ex.setCapacity(numberOfStudent);
+                                                numberOfStudent = 0;
                                             }
-                                        }
-
-                                    }
-                                    ex.setRoom(cl);
-                                    ex.setIndex(examRoomIndex++);
-                                    if (numberOfStudent > cl.getCapacityExam()) {
-                                        ex.setCapacity(cl.getCapacityExam());
-                                        numberOfStudent -= cl.getCapacityExam();
-                                    } else {
-                                        ex.setCapacity(numberOfStudent);
-                                        numberOfStudent = 0;
-                                    }
-                                    SubjectSchedule ss = new SubjectSchedule(s, ex, i);
-                                    subjectSchedules.add(ss);
-                                    usedListLT.add(new String[]{i + "", cl.getId()});
-                                    Set<String> set = subjectMap.get(s);
+                                            SubjectSchedule ss = new SubjectSchedule(s, ex.clone(), i);
+                                            subjectSchedules.add(ss);
+                                            usedListLT.add(new String[]{i + "", cl.getId()});
+                                            Set<String> set = subjectMap.get(s);
 //                                    System.out.println("subject map size:"+subjectMap.size());
 //                                    System.out.println(s + " " + (set == null));
-                                    set.add(this.date);
-                                    subjectMap.put(s, set);
-                                    ltClassMap.put(cl.getName() + "-" + i, ss);
-                                    break shiftLoop;
+                                            set.add(this.date);
+                                            subjectMap.put(s, set);
+                                            ltClassMap.put(cl.getName() + "-" + i, ss);
+                                            totalClassRoomUsedForShift++;
+                                            if (numberOfStudent == 0) {
+                                                break shiftLoop;
+                                            }
+                                            if (totalClassRoomUsedForShift == 6) {
+                                                break loopFindClass;
+                                            }
+                                        }catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+                                    } else {
+                                        usedListLoop:
+                                        for (int j = 0; j < usedListLT.size(); j++) {
+//                                System.out.println("            usedList " + j + " :" + usedList.get(j)[0] + "-" + usedList.get(j)[1]);
+                                            if (Integer.parseInt(usedListLT.get(j)[0]) == i) {
+                                                if (usedListLT.get(j)[1].compareTo(cl.getId()) == 0) {
+//                                        System.out.println("            ca thi " + i + " và lớp " + cl.getId() + " đã dùng");
+                                                    if (usedListLT.size() > totalClassRoomLTList.size() * 4 - 1) {
+                                                        remainSubject.add(preparedSubject.get(si));
+                                                        continue subjectLoop;
+                                                    }
+                                                    int shift = i;
+                                                    List<String[]> countRoomOfShift = usedListLT.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList());
+                                                    if (countRoomOfShift.size() == totalClassRoomLTList.size()) {
+                                                        continue shiftLoop;
+                                                    } else {
+                                                        continue loopFindClass;
+                                                    }
+
+
+                                                }
+                                            }
+
+                                        }
+                                        try {
+                                            ex.setRoom(cl);
+                                            ex.setIndex(examRoomIndex++);
+                                            if (numberOfStudent > cl.getCapacityExam()) {
+                                                ex.setCapacity(cl.getCapacityExam());
+                                                numberOfStudent -= cl.getCapacityExam();
+                                            } else {
+                                                ex.setCapacity(numberOfStudent);
+                                                numberOfStudent = 0;
+                                            }
+                                            SubjectSchedule ss = new SubjectSchedule(s, ex.clone(), i);
+                                            subjectSchedules.add(ss);
+                                            usedListLT.add(new String[]{i + "", cl.getId()});
+                                            Set<String> set = subjectMap.get(s);
+//                                    System.out.println("subject map size:"+subjectMap.size());
+//                                    System.out.println(s + " " + (set == null));
+                                            set.add(this.date);
+                                            subjectMap.put(s, set);
+                                            ltClassMap.put(cl.getName() + "-" + i, ss);
+                                            totalClassRoomUsedForShift++;
+                                            if (numberOfStudent == 0) {
+                                                break shiftLoop;
+                                            }
+                                            if (totalClassRoomUsedForShift == 6) {
+                                                break loopFindClass;
+                                            }
+                                        }catch (Exception e){
+
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -593,6 +668,12 @@ public class DateSchedule implements Comparable<DateSchedule> {
 //        System.out.println(thClassMap.toString());
         preparedSubject.clear();
         return remainSubject;
+    }
+
+    // tính tổng số sv của 1 môn
+    public int totalStudentOfRegistrationClassList(List<RegistrationClass> registrationClasses) {
+        if (registrationClasses == null || registrationClasses.size() == 0) return 0;
+        return registrationClasses.stream().reduce(0, (prev, e) -> prev + e.getEstimatedClassSizeReal(), Integer::sum);
     }
 
     public void setPreparedSubject(List<Subject> preparedSubject) {

@@ -78,7 +78,7 @@ public class Schedule implements Comparable<Schedule> {
         int result = 0;
         for (Map.Entry<String, Integer> entry : check.entrySet()) {
             result += entry.getValue();
-            System.out.println(entry.getKey() + " left:" + entry.getValue());
+//            System.out.println(entry.getKey() + " left:" + entry.getValue());
         }
         return result == 0;
     }
@@ -340,8 +340,10 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     public boolean isAccepted() throws IOException {
-        System.out.println("remain subject:" + remainSubject);
+//        System.out.println("remain subject:" + remainSubject);
         return remainSubject == 0 && isFinish();
+//        return remainSubject == 0 ;
+
     }
 
     public void fitness() {
