@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class GWO {
-    public static final int N_WOLF = 100;
-    public static final int N_ITER = 1000;
+    public static final int N_WOLF = 50;
+    public static final int N_ITER = 100;
     public List<String> dates;
 
     public GWO(List<String> dates) {
@@ -28,6 +28,9 @@ public class GWO {
         return schedules;
     }
 
+    /*
+     * Map.Entry<Subject, Set<String>> : set<String>: ds các ngày xếp lịch thi của môn đó
+     */
     public List<Map.Entry<Subject, Set<String>>> swapSquence(Schedule a, Schedule b) {
         List<Map.Entry<Subject, Set<String>>> aList = new ArrayList<>(a.getSubjectMap().entrySet());
         List<Map.Entry<Subject, Set<String>>> bList = new ArrayList<>(b.getSubjectMap().entrySet());
@@ -115,6 +118,7 @@ public class GWO {
         whileloop:
         while (iter < N_ITER) {
             iter++;
+            System.out.println("loop "+iter);
             for (int i = 3; i < N_WOLF; i++) {
                 Schedule scheduleInPopulation = schedules[i];
                 List<Map.Entry<Subject, Set<String>>> swapList = new ArrayList<>();
@@ -143,7 +147,7 @@ public class GWO {
                 }
                 scheduleInPopulation = bestChange.clone();
                 scheduleInPopulation.fitness();
-                System.out.println(scheduleInPopulation.fitness);
+//                System.out.println(scheduleInPopulation.fitness);
                 if (scheduleInPopulation.isAccepted()) {
                     if (scheduleInPopulation.fitness < alpha.fitness) {
                         Schedule temp = delta.clone();
@@ -224,6 +228,8 @@ public class GWO {
         dates.add("15/10/2022");
         dates.add("16/10/2022");
         dates.add("17/10/2022");
+        dates.add("18/10/2022");
+        dates.add("19/10/2022");
         GWO gwo = new GWO(dates);
         Schedule[] schedules = gwo.createPopulation();
 //        for (Schedule s : schedules) {
