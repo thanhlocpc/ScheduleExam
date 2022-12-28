@@ -455,11 +455,36 @@ public class DateSchedule implements Comparable<DateSchedule> {
                     ExamRoom ex = new ExamRoom(rs);
                     shiftLoop:
                     for (int i = 0; i < 4; i++) {
+                        // nếu ca trước xếp gần hết phòng thì chuyển sang ca sau thi
+                        final int shift = i;
+                        int countRoomThUsedOfShift = usedListTH.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList()).size();
+                        int countRoomLtUsedOfShift = usedListLT.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList()).size();
+                        if (s.getExamForms() == 1) { //TH
+
+                            if (totalClassRoomTHList.size() - countRoomThUsedOfShift < 2) {
+                                if (i == 3) {
+                                    remainSubject.add(preparedSubject.get(si));
+                                    break subjectLoop;
+                                }else{
+                                    continue shiftLoop;
+                                }
+                            }
+                        } else {
+                            if (totalClassRoomLTList.size() - countRoomLtUsedOfShift < 2) {
+                                if (i == 3) {
+                                    remainSubject.add(preparedSubject.get(si));
+                                    break subjectLoop;
+                                }else{
+                                    continue shiftLoop;
+                                }
+                            }
+                        }
+
                         ClassRoom cl = null;
                         int index = -1;
                         // một môn thi, ưu tiên thi trong 1 ngày,
                         // môn thi lt 1 ca thi tối đa 6 phòng, môn thi thực hành 1 ca 4 phòng
-                        int totalClassRoomUsedForShift = 0;
+                        int totalClassRoomUsedForSubjectShift = 0;
                         if (s.getExamForms() == 1) {
 //                            if (usedList.size() > totalClassRoomTHList.size() * 4 - 1) {
                             if (usedListTH.size() > totalClassRoomTHList.size() * 4 - 1) {
@@ -496,11 +521,11 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                             e.printStackTrace();
                                         }
 
-                                        totalClassRoomUsedForShift++;
+                                        totalClassRoomUsedForSubjectShift++;
                                         if (numberOfStudent == 0) {
                                             break shiftLoop;
                                         }
-                                        if (totalClassRoomUsedForShift == 4) {
+                                        if (totalClassRoomUsedForSubjectShift == 4) {
                                             break loopFindClass;
                                         }
                                     } else {
@@ -514,8 +539,8 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                                 }
                                                 if (usedListTH.get(j)[1].compareTo(cl.getId()) == 0) {
 //                                        System.out.println("            ca thi " + i + " và lớp " + cl.getId() + " đã dùng");
-                                                    final int shift = i;
-                                                    if (usedListTH.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList()).size() == totalClassRoomTHList.size()) {
+                                                    countRoomThUsedOfShift = usedListTH.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList()).size();
+                                                    if (countRoomThUsedOfShift == totalClassRoomTHList.size()) {
                                                         continue shiftLoop;
                                                     } else {
                                                         continue loopFindClass;
@@ -524,7 +549,7 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                             }
 
                                         }
-                                        try{
+                                        try {
                                             ex.setRoom(cl);
                                             ex.setIndex(examRoomIndex++);
                                             if (numberOfStudent > cl.getCapacityExam()) {
@@ -544,14 +569,14 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                             subjectMap.put(s, set);
                                             thClassMap.put(cl.getName() + "-" + i, ss);
 
-                                            totalClassRoomUsedForShift++;
+                                            totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
                                                 break shiftLoop;
                                             }
-                                            if (totalClassRoomUsedForShift == 4) {
+                                            if (totalClassRoomUsedForSubjectShift == 4) {
                                                 break loopFindClass;
                                             }
-                                        }catch (Exception e){
+                                        } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     }
@@ -591,14 +616,14 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                             set.add(this.date);
                                             subjectMap.put(s, set);
                                             ltClassMap.put(cl.getName() + "-" + i, ss);
-                                            totalClassRoomUsedForShift++;
+                                            totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
                                                 break shiftLoop;
                                             }
-                                            if (totalClassRoomUsedForShift == 6) {
+                                            if (totalClassRoomUsedForSubjectShift == 6) {
                                                 break loopFindClass;
                                             }
-                                        }catch (Exception e){
+                                        } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     } else {
@@ -612,9 +637,8 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                                         remainSubject.add(preparedSubject.get(si));
                                                         continue subjectLoop;
                                                     }
-                                                    int shift = i;
-                                                    List<String[]> countRoomOfShift = usedListLT.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList());
-                                                    if (countRoomOfShift.size() == totalClassRoomLTList.size()) {
+                                                    countRoomLtUsedOfShift = usedListLT.stream().filter(e -> e[0].equals(shift + "")).collect(Collectors.toList()).size();
+                                                    if (countRoomLtUsedOfShift == totalClassRoomLTList.size()) {
                                                         continue shiftLoop;
                                                     } else {
                                                         continue loopFindClass;
@@ -644,14 +668,14 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                             set.add(this.date);
                                             subjectMap.put(s, set);
                                             ltClassMap.put(cl.getName() + "-" + i, ss);
-                                            totalClassRoomUsedForShift++;
+                                            totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
                                                 break shiftLoop;
                                             }
-                                            if (totalClassRoomUsedForShift == 6) {
+                                            if (totalClassRoomUsedForSubjectShift == 6) {
                                                 break loopFindClass;
                                             }
-                                        }catch (Exception e){
+                                        } catch (Exception e) {
 
                                         }
                                     }

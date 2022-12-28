@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class GWO {
-    public static final int N_WOLF = 50;
-    public static final int N_ITER = 100;
+    public static final int N_WOLF = 100;
+    public static final int N_ITER = 1000;
     public List<String> dates;
 
     public GWO(List<String> dates) {
@@ -230,6 +230,7 @@ public class GWO {
         dates.add("17/10/2022");
         dates.add("18/10/2022");
         dates.add("19/10/2022");
+        dates.add("20/10/2022");
         GWO gwo = new GWO(dates);
         Schedule[] schedules = gwo.createPopulation();
 //        for (Schedule s : schedules) {
