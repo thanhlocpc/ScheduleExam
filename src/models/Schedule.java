@@ -56,7 +56,7 @@ public class Schedule implements Comparable<Schedule> {
 
             if (subject != null) {
                 classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]),
-                        Integer.parseInt(tokens[3]), subject,new Grade(tokens[4],tokens[4])));
+                        Integer.parseInt(tokens[3]), subject, new Grade(tokens[4], tokens[4])));
                 int currentCap = check.get(subject.getId());
                 check.put(subject.getId(), currentCap + Integer.parseInt(tokens[3]));
             }
@@ -146,10 +146,10 @@ public class Schedule implements Comparable<Schedule> {
         for (Subject s : subjectList) {
             subjectMapBest.put(s, new HashSet<>());
         }
-        System.out.println(dateSchedule.getSubjectSchedules());
+//        System.out.println(dateSchedule.getSubjectSchedules());
         List<Subject> preparedSubjectList = new ArrayList<>(preparedSubjectSet);
-        int N_WOLF = 50;
-        final int N_ITER = 100;
+        int N_WOLF = 100;
+        final int N_ITER = 500;
         List<DateSchedule> population = new ArrayList<>();
         for (int i = 0; i < N_WOLF; i++) {
             DateSchedule ds = new DateSchedule(date, subjectList, subjectMapBest);
@@ -162,18 +162,7 @@ public class Schedule implements Comparable<Schedule> {
         DateSchedule alpha = population.get(0);
         DateSchedule beta = population.get(1);
         DateSchedule delta = population.get(2);
-//        System.out.println(alpha);
-//        System.out.println(alpha.fitness);
-//        System.out.println("====");
-//        System.out.println(beta);
-//        System.out.println(beta.fitness);
-//        System.out.println("====");
-//        System.out.println(delta);
-//        System.out.println(delta.fitness);
-//        System.out.println("====");
-//        System.out.println(population.get(4));
-//        System.out.println(population.get(4).fitness);
-//        System.out.println("====");
+
 
         ArrayList<int[]> map;
         int iter = 0;
@@ -181,27 +170,27 @@ public class Schedule implements Comparable<Schedule> {
         while (iter < N_ITER) {
             iter++;
             for (int i = 3; i < population.size(); i++) {
-        map = new ArrayList<>();
-        DateSchedule current = population.get(i);
+                map = new ArrayList<>();
+                DateSchedule current = population.get(i);
 //                System.out.println(current.toString());
 
-        map.addAll(swapLtSequence(alpha, current));
-        map.addAll(swapLtSequence(beta, current));
-        map.addAll(swapLtSequence(delta, current));
-        for (int l = 0; l < map.size(); l++) {
-            System.out.println(map.get(l)[0] + "-" + map.get(l)[1]);
-        }
+                map.addAll(swapLtSequence(alpha, current));
+                map.addAll(swapLtSequence(beta, current));
+                map.addAll(swapLtSequence(delta, current));
+//                for (int l = 0; l < map.size(); l++) {
+//                    System.out.println(map.get(l)[0] + "-" + map.get(l)[1]);
+//                }
 
 //                System.out.println("population " + i + "-----------------");
-        DateSchedule bestDs = bestSwap(map, current);
-        bestDs.fitness();
-        System.out.println(bestDs);
-        System.out.println(bestDs.fitness);
-        Map<String, SubjectSchedule> mm = current.getLtClassMap();
-        List<Map.Entry<String, SubjectSchedule>> entryList = new ArrayList<>(mm.entrySet());
-        for(int j=0;j<entryList.size();j++){
-            System.out.println(j+"=="+entryList.get(j).getKey()+"=="+entryList.get(j).getValue());
-        }
+                DateSchedule bestDs = bestSwap(map, current);
+                bestDs.fitness();
+//                System.out.println(bestDs);
+//                System.out.println(bestDs.fitness);
+                Map<String, SubjectSchedule> mm = current.getLtClassMap();
+                List<Map.Entry<String, SubjectSchedule>> entryList = new ArrayList<>(mm.entrySet());
+//                for (int j = 0; j < entryList.size(); j++) {
+//                    System.out.println(j + "==" + entryList.get(j).getKey() + "==" + entryList.get(j).getValue());
+//                }
 //                bestDs.countNumberOfNun();
                 if (bestDs.fitness < alpha.fitness) {
                     DateSchedule temp = delta.clone();
@@ -224,9 +213,9 @@ public class Schedule implements Comparable<Schedule> {
                 }
             }
         }
-        System.out.println("best iter:" + bestIter);
-        System.out.println("best schedule fitness:" + alpha.fitness);
-        System.out.println(alpha.toString());
+//        System.out.println("best iter:" + bestIter);
+//        System.out.println("best schedule fitness:" + alpha.fitness);
+//        System.out.println(alpha.toString());
         return alpha;
     }
 
@@ -304,13 +293,13 @@ public class Schedule implements Comparable<Schedule> {
         }
         if (dateChangeSet.toArray().length > 0) {
             DateSchedule d = getDateScheduleByDate((String) dateChangeSet.toArray()[0]);
-            System.out.println("date to add:" + d.getDate());
-            System.out.println("ss size before:" + d.subjectSchedules.size());
+//            System.out.println("date to add:" + d.getDate());
+//            System.out.println("ss size before:" + d.subjectSchedules.size());
             d.addNewSubject(subjectChange);
-            System.out.println("ss size after:" + d.subjectSchedules.size());
+//            System.out.println("ss size after:" + d.subjectSchedules.size());
         }
         this.fitness();
-        System.out.println(subjectChange.getName() + " " + fitness);
+//        System.out.println(subjectChange.getName() + " " + fitness);
     }
 
 
@@ -382,12 +371,12 @@ public class Schedule implements Comparable<Schedule> {
         // weight: (5 - 5) - (5- 1) - (1- 5)=  0
         // -6 * 16
         for (int i = 0; i < dateScheduleList.size(); i++) {
-            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e -> e).collect(Collectors.toList());
             Map<Integer, Integer> mapCountRoomOfShift = new HashMap<>();
-            newSubjectSchedules.stream().forEach(e->{
-                if(mapCountRoomOfShift.get(e.getShift()) !=  null){
+            newSubjectSchedules.stream().forEach(e -> {
+                if (mapCountRoomOfShift.get(e.getShift()) != null) {
                     mapCountRoomOfShift.put(e.shift, mapCountRoomOfShift.get(e.shift) + 1);
-                }else{
+                } else {
                     mapCountRoomOfShift.put(e.shift, 1);
                 }
             });
@@ -396,19 +385,20 @@ public class Schedule implements Comparable<Schedule> {
             int weight = 0;
             boolean isASC = true;
             int min = Integer.MAX_VALUE;
-            for (Map.Entry<Integer, Integer> entry: mapCountRoomOfShift.entrySet()){
-                if(entry.getValue() / 2 != 0){
+            for (Map.Entry<Integer, Integer> entry : mapCountRoomOfShift.entrySet()) {
+                if (entry.getValue() / 2 != 0) {
                     isASC = false;
                     weight += 50;
                 }
-                if(entry.getValue() <= min){
+                if (entry.getValue() <= min) {
                     min = entry.getValue();
-                }else{
+                } else {
                     isASC = false;
                     weight += 450;
                 }
-            };
-            if(isASC) weight = 0;
+            }
+            ;
+            if (isASC) weight = 0;
             result += weight;
         }
 
@@ -417,13 +407,13 @@ public class Schedule implements Comparable<Schedule> {
         // đếm số môn thi của 1 khối lớp trong ngày
         for (int i = 0; i < dateScheduleList.size(); i++) {
 
-            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e -> e).collect(Collectors.toList());
 
             Map<String, Set<String>> mapCountSubjectOfGrade = new HashMap<>();
-            newSubjectSchedules.stream().forEach(e->{
-                if(mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()) !=  null){
+            newSubjectSchedules.stream().forEach(e -> {
+                if (mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()) != null) {
                     mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()).add(e.getSubject().getId());
-                }else{
+                } else {
                     Set<String> subs = new HashSet<>();
                     subs.add(e.getSubject().getId());
                     mapCountSubjectOfGrade.put(e.getRoom().getRegistrationClass().getGrade().getId(), subs);
@@ -431,14 +421,15 @@ public class Schedule implements Comparable<Schedule> {
             });
 
             int weight = 0;
-            for (Map.Entry<String, Set<String>> entry: mapCountSubjectOfGrade.entrySet()){
+            for (Map.Entry<String, Set<String>> entry : mapCountSubjectOfGrade.entrySet()) {
                 // 1 học sinh thi lớn hơn 1 môn trên ngày
-                if(entry.getValue().size() > 2){
+                if (entry.getValue().size() > 2) {
                     weight += 1500;
-                }else if(entry.getValue().size() > 1){
+                } else if (entry.getValue().size() > 1) {
                     weight += 500;
                 }
-            };
+            }
+            ;
             result += weight;
         }
 
@@ -452,41 +443,42 @@ public class Schedule implements Comparable<Schedule> {
         // nhỏ hơn 4 thì phải chung 1 ca thi
         for (int i = 0; i < dateScheduleList.size(); i++) {
 
-            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e->e).collect(Collectors.toList());
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e -> e).collect(Collectors.toList());
 
             Map<String, Integer> mapCountRoomOfSubject = new HashMap<>();
             Map<String, Set<Integer>> mapCountShiftOfSubject = new HashMap<>();
-            newSubjectSchedules.stream().forEach(e->{
-                if(mapCountRoomOfSubject.get(e.getSubject().getId()) !=  null){
-                    mapCountRoomOfSubject.put(e.getSubject().getId(), mapCountRoomOfSubject.get(e.getSubject().getId())+1);
-                }else{
+            newSubjectSchedules.stream().forEach(e -> {
+                if (mapCountRoomOfSubject.get(e.getSubject().getId()) != null) {
+                    mapCountRoomOfSubject.put(e.getSubject().getId(), mapCountRoomOfSubject.get(e.getSubject().getId()) + 1);
+                } else {
                     mapCountRoomOfSubject.put(e.getSubject().getId(), 1);
                 }
 
-                if(mapCountShiftOfSubject.get(e.getSubject().getId()) !=  null){
+                if (mapCountShiftOfSubject.get(e.getSubject().getId()) != null) {
                     mapCountShiftOfSubject.get(e.getSubject().getId()).add(e.getShift());
-                }else{
+                } else {
                     Set<Integer> shifts = new HashSet<>();
                     shifts.add(e.getShift());
-                    mapCountShiftOfSubject.put(e.getSubject().getId(),shifts);
+                    mapCountShiftOfSubject.put(e.getSubject().getId(), shifts);
 
                 }
             });
 
             int weight = 0;
-            for (Map.Entry<String, Integer> entry: mapCountRoomOfSubject.entrySet()){
+            for (Map.Entry<String, Integer> entry : mapCountRoomOfSubject.entrySet()) {
                 // nếu môn này có tổng số phòng thi > 4
                 // thì xem số ca thi có hợp lí hay không
-                if(entry.getValue() > 4){
-                    if(entry.getValue() / mapCountShiftOfSubject.get(entry.getKey()).size() < 3.1){
+                if (entry.getValue() > 4) {
+                    if (entry.getValue() / mapCountShiftOfSubject.get(entry.getKey()).size() < 3.1) {
                         weight += 500;
                     }
-                }else{
-                    if(mapCountShiftOfSubject.get(entry.getKey()).size() > 1){
+                } else {
+                    if (mapCountShiftOfSubject.get(entry.getKey()).size() > 1) {
                         weight += 1500;
                     }
                 }
-            };
+            }
+            ;
             result += weight;
         }
         this.fitness = result;

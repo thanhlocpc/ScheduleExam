@@ -23,8 +23,8 @@ public class EnumConst {
 
     public enum ExamFormsTypeEnum {
         LAB_EXAM("Thi thực hành"),
-        THEORY_EXAM("Thi lý thuyết");
-
+        THEORY_EXAM("Thi lý thuyết"),
+        ORAL_EXAM("Thi vấn đáp");
         String description;
 
         ExamFormsTypeEnum(String description) {

@@ -50,6 +50,10 @@ public class ClassRoom {
         this.capacityBase = capacityBase;
     }
 
+    public int getType() {
+        return type;
+    }
+
     public int getCapacityExam() {
         return capacityExam;
     }

@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.util.*;
 
 public class GWO {
-    public static final int N_WOLF = 100;
+    public static final int N_WOLF = 200;
     public static final int N_ITER = 1000;
     public List<String> dates;
+    public Schedule finalSchedule;
 
     public GWO(List<String> dates) {
         this.dates = dates;
@@ -62,11 +63,11 @@ public class GWO {
         Schedule[] schedules = createPopulation();
         Arrays.sort(schedules);
         Schedule alpha = schedules[0];
-        System.out.println("alpha:" + alpha.fitness);
+//        System.out.println("alpha:" + alpha.fitness);
         Schedule beta = schedules[1];
-        System.out.println("beta:" + beta.fitness);
+//        System.out.println("beta:" + beta.fitness);
         Schedule delta = schedules[2];
-        System.out.println("delta:" + delta.fitness);
+//        System.out.println("delta:" + delta.fitness);
 //        System.out.println("alpha");
 //        for (Map.Entry<Subject, Set<String>> entry : alpha.getSubjectMap().entrySet()) {
 //            System.out.print(entry.getKey().getName() + ":");
@@ -115,10 +116,11 @@ public class GWO {
         int iter = 0;
         int bestIter = 0;
         Random random = new Random();
+        long begin = System.currentTimeMillis();
         whileloop:
         while (iter < N_ITER) {
             iter++;
-            System.out.println("loop "+iter);
+//            System.out.println("loop "+iter);
             for (int i = 3; i < N_WOLF; i++) {
                 Schedule scheduleInPopulation = schedules[i];
                 List<Map.Entry<Subject, Set<String>>> swapList = new ArrayList<>();
@@ -138,7 +140,7 @@ public class GWO {
                     scheduleInPopulation.changeSchedule(entry);
 //                    scheduleInPopulation.findBestSchedule();
                     scheduleInPopulation.fitness();
-                    System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness + "--- bestChange:" + bestChange.fitness);
+//                    System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness + "--- bestChange:" + bestChange.fitness);
 
                     if (scheduleInPopulation.fitness < bestChange.fitness) {
                         bestChange = scheduleInPopulation.clone();
@@ -170,29 +172,51 @@ public class GWO {
                     }
                 }
             }
+
+//            System.out.println("alpha fitness at "+iter+" is:"+alpha.fitness);
+//            System.out.println("beta fitness at "+iter+" is:"+beta.fitness);
+//            System.out.println("delta fitness at "+iter+" is:"+delta.fitness);
         }
 
-
-        Schedule bestSchedultBeforeChange=alpha.clone();
+        long end_find_schedule = System.currentTimeMillis();
+        Schedule bestSchedultBeforeChange = alpha.clone();
         bestSchedultBeforeChange.fitness();
-        alpha.findBestSchedule();
-        alpha.fitness();
+
+//        Schedule scheduleTemp=alpha.clone();
+//        Schedule bestSche=alpha.clone();
+//        bestSche.fitness();
+//        for(int l=0;l<100;l++){
+//            scheduleTemp.findBestSchedule();
+//            scheduleTemp.fitness();
+//            System.out.println("find best schedule by date at "+l+":"+scheduleTemp.fitness);
+//            if(scheduleTemp.fitness<bestSche.fitness){
+//                bestSche=scheduleTemp.clone();
+//            }
+//            scheduleTemp=alpha.clone();
+//        }
+//        alpha.findBestSchedule();
+//        alpha.fitness();
+        long end_best_schedule = System.currentTimeMillis();
         System.out.println("best iter:" + bestIter);
         System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
         System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
-        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
-        for (int i = 0; i < dses.size(); i++) {
-            System.out.println(dses.get(i).toString());
+        this.finalSchedule = bestSchedultBeforeChange.clone();
+        finalSchedule.fitness();
+//        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
+//        for (int i = 0; i < dses.size(); i++) {
+//            System.out.println(dses.get(i).toString());
+//
+//        }
 
-        }
-
-        System.out.println("best schedule fitness with change date schedule:" + alpha.fitness);
-        System.out.println("is accepted:" + alpha.isAccepted());
-        List<DateSchedule> dses1 = alpha.getDateScheduleList();
-        for (int i = 0; i < dses1.size(); i++) {
-            System.out.println(dses1.get(i).toString());
-
-        }
+//        System.out.println("best schedule fitness with change date schedule:" + bestSche.fitness);
+//        System.out.println("is accepted:" + bestSche.isAccepted());
+//        List<DateSchedule> dses1 = bestSche.getDateScheduleList();
+//        for (int i = 0; i < dses1.size(); i++) {
+//            System.out.println(dses1.get(i).toString());
+//
+//        }
+//        System.out.println("time to get schedule:"+(end_find_schedule-begin));
+//        System.out.println("time to get best schedule:"+(end_best_schedule-end_find_schedule));
 //        for (int i = 0; i < dses.size(); i++) {
 //            System.out.println("lt map " + i + ":");
 //            System.out.println(dses.get(i).getLtClassMap().toString());
@@ -232,10 +256,28 @@ public class GWO {
         dates.add("19/10/2022");
         dates.add("20/10/2022");
         GWO gwo = new GWO(dates);
+
         Schedule[] schedules = gwo.createPopulation();
 //        for (Schedule s : schedules) {
 //            System.out.println(s.fitness);
 //        }
         gwo.gwo();
+        Schedule bestSchedule = gwo.finalSchedule;
+        int at=0;
+        for (int i = 0; i < 10; i++) {
+            System.out.println("schedule " + i + ":");
+            gwo.gwo();
+            if (gwo.finalSchedule.fitness < bestSchedule.fitness) {
+                bestSchedule = gwo.finalSchedule.clone();
+                bestSchedule.fitness();
+                at=i;
+            }
+        }
+        System.out.println("best schefule at:"+at);
+        List<DateSchedule> dses = bestSchedule.getDateScheduleList();
+        for (int i = 0; i < dses.size(); i++) {
+            System.out.println(dses.get(i).toString());
+
+        }
     }
 }
