@@ -87,11 +87,6 @@ public class DateSchedule implements Comparable<DateSchedule> {
         ltClassMap = new HashMap<>();
         initiateClassMap();
     }
-
-    //    public List<ExamRoom> getListExamRoom() {
-//        List<ExamRoom> erList = new ArrayList<>();
-//
-//    }
     public boolean isContainSubject(Subject subject) {
         for (Map.Entry<Subject, Set<String>> entry : subjectMap.entrySet()) {
             if (subject.getId().equals(entry.getKey().getId()))
@@ -394,16 +389,6 @@ public class DateSchedule implements Comparable<DateSchedule> {
 
     public void addNewSubject(Subject s) throws IOException {
         preparedSubject.add(s);
-        //System.out.println(preparedSubject.toString());
-        for (String[] sss : usedListTH) {
-            //System.out.print(sss[0]+"-"+sss[1]+",");
-        }
-        //System.out.println();
-        for (String[] sss : usedListLT) {
-            //System.out.print(sss[0]+"-"+sss[1]+",");
-        }
-        //System.out.println();
-
         remainSubject = generateSchedule();
     }
 
@@ -639,11 +624,8 @@ public class DateSchedule implements Comparable<DateSchedule> {
                                                     } else {
                                                         continue loopFindClass;
                                                     }
-
-
                                                 }
                                             }
-
                                         }
                                         try {
                                             ex.setRoom(cl);
@@ -777,10 +759,6 @@ public class DateSchedule implements Comparable<DateSchedule> {
                 }
             }
         }
-//        System.out.println("lt map:");
-//        System.out.println(ltClassMap.toString());
-//        System.out.println("th map:");
-//        System.out.println(thClassMap.toString());
         preparedSubject.clear();
         return remainSubject;
     }
@@ -797,25 +775,15 @@ public class DateSchedule implements Comparable<DateSchedule> {
 
     public List<Subject> generateInitialSubjectSchedule() throws IOException {
         Random rd = new Random();
-
-//        System.out.println("generate schedule for date:" + date);
-
-
-//        System.out.println("số lượng registrationClass:" + registrationClasses.size());
         int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.4)) + 2;
 
-//        System.out.println("Số lượng môn học còn lại:" + remainSubject.size());
         for (int i = 0; i < numSubject; i++) {
             int randomIndex = rd.nextInt(remainSubject.size());
             preparedSubject.add(remainSubject.get(randomIndex));
             remainSubject.remove(randomIndex);
         }
-//        System.out.println("Số lượng môn học chuẩn bị sắp xếp:" + preparedSubject.size());
-//        System.out.println("Remain subject 1:" + remainSubject.size());
         generateSchedule();
-//        System.out.println("Remain subject 2:" + remainSubject.size());
         return remainSubject;
-
     }
 
     public String toString() {

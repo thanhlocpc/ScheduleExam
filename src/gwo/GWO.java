@@ -63,55 +63,8 @@ public class GWO {
         Schedule[] schedules = createPopulation();
         Arrays.sort(schedules);
         Schedule alpha = schedules[0];
-//        System.out.println("alpha:" + alpha.fitness);
         Schedule beta = schedules[1];
-//        System.out.println("beta:" + beta.fitness);
         Schedule delta = schedules[2];
-//        System.out.println("delta:" + delta.fitness);
-//        System.out.println("alpha");
-//        for (Map.Entry<Subject, Set<String>> entry : alpha.getSubjectMap().entrySet()) {
-//            System.out.print(entry.getKey().getName() + ":");
-//            Set<String> set = entry.getValue();
-//            for (String ss : set) {
-//                System.out.print(ss + "-");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("beta");
-//        for (Map.Entry<Subject, Set<String>> entry : beta.getSubjectMap().entrySet()) {
-//            System.out.print(entry.getKey().getName() + ":");
-//            Set<String> set = entry.getValue();
-//            for (String ss : set) {
-//                System.out.print(ss + "-");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("delta");
-//        for (Map.Entry<Subject, Set<String>> entry : delta.getSubjectMap().entrySet()) {
-//            System.out.print(entry.getKey().getName() + ":");
-//            Set<String> set = entry.getValue();
-//            for (String ss : set) {
-//                System.out.print(ss + "-");
-//            }
-//            System.out.println();
-//        }
-//
-//        Schedule scheduleInPopulation = schedules[50];
-//        System.out.println("scheduleInPopulation");
-//        for (Map.Entry<Subject, Set<String>> entry : scheduleInPopulation.getSubjectMap().entrySet()) {
-//            System.out.print(entry.getKey().getName() + ":");
-//            Set<String> set = entry.getValue();
-//            for (String ss : set) {
-//                System.out.print(ss + "-");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness);
-//        List<DateSchedule> dses2 = scheduleInPopulation.getDateScheduleList();
-//        for (int i = 0; i < dses2.size(); i++) {
-//            System.out.println(dses2.get(i).toString());
-//
-//        }
 
         int iter = 0;
         int bestIter = 0;
@@ -120,27 +73,16 @@ public class GWO {
         whileloop:
         while (iter < N_ITER) {
             iter++;
-//            System.out.println("loop "+iter);
             for (int i = 3; i < N_WOLF; i++) {
                 Schedule scheduleInPopulation = schedules[i];
                 List<Map.Entry<Subject, Set<String>>> swapList = new ArrayList<>();
                 swapList.addAll(swapSquence(alpha, scheduleInPopulation));
                 swapList.addAll(swapSquence(beta, scheduleInPopulation));
                 swapList.addAll(swapSquence(delta, scheduleInPopulation));
-//        System.out.println(swapList.size());
-//        for (int i = 0; i < swapList.size(); i++) {
-//            System.out.print(swapList.get(i).getKey() + "-");
-//            for (String s : swapList.get(i).getValue()) {
-//                System.out.print(s + "/");
-//            }
-//            System.out.println();
-//        }
                 Schedule bestChange = scheduleInPopulation.clone();
                 for (Map.Entry<Subject, Set<String>> entry : swapList) {
                     scheduleInPopulation.changeSchedule(entry);
-//                    scheduleInPopulation.findBestSchedule();
                     scheduleInPopulation.fitness();
-//                    System.out.println("scheduleInPopulation:" + scheduleInPopulation.fitness + "--- bestChange:" + bestChange.fitness);
 
                     if (scheduleInPopulation.fitness < bestChange.fitness) {
                         bestChange = scheduleInPopulation.clone();
@@ -149,7 +91,6 @@ public class GWO {
                 }
                 scheduleInPopulation = bestChange.clone();
                 scheduleInPopulation.fitness();
-//                System.out.println(scheduleInPopulation.fitness);
                 if (scheduleInPopulation.isAccepted()) {
                     if (scheduleInPopulation.fitness < alpha.fitness) {
                         Schedule temp = delta.clone();
@@ -172,30 +113,12 @@ public class GWO {
                     }
                 }
             }
-
-//            System.out.println("alpha fitness at "+iter+" is:"+alpha.fitness);
-//            System.out.println("beta fitness at "+iter+" is:"+beta.fitness);
-//            System.out.println("delta fitness at "+iter+" is:"+delta.fitness);
         }
 
         long end_find_schedule = System.currentTimeMillis();
         Schedule bestSchedultBeforeChange = alpha.clone();
         bestSchedultBeforeChange.fitness();
 
-//        Schedule scheduleTemp=alpha.clone();
-//        Schedule bestSche=alpha.clone();
-//        bestSche.fitness();
-//        for(int l=0;l<100;l++){
-//            scheduleTemp.findBestSchedule();
-//            scheduleTemp.fitness();
-//            System.out.println("find best schedule by date at "+l+":"+scheduleTemp.fitness);
-//            if(scheduleTemp.fitness<bestSche.fitness){
-//                bestSche=scheduleTemp.clone();
-//            }
-//            scheduleTemp=alpha.clone();
-//        }
-//        alpha.findBestSchedule();
-//        alpha.fitness();
         long end_best_schedule = System.currentTimeMillis();
         System.out.println("best iter:" + bestIter);
         System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
@@ -258,9 +181,6 @@ public class GWO {
         GWO gwo = new GWO(dates);
 
         Schedule[] schedules = gwo.createPopulation();
-//        for (Schedule s : schedules) {
-//            System.out.println(s.fitness);
-//        }
         gwo.gwo();
         Schedule bestSchedule = gwo.finalSchedule;
         int at=0;
