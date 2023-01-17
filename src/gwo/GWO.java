@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class GWO {
-    public static final int N_WOLF = 200;
-    public static final int N_ITER = 1000;
+    public static final int N_WOLF = 50;
+    public static final int N_ITER = 200;
     public List<String> dates;
     public Schedule finalSchedule;
 
@@ -184,7 +184,11 @@ public class GWO {
         gwo.gwo();
         Schedule bestSchedule = gwo.finalSchedule;
         int at=0;
+
+        long beginTime=0;
+        long endTime=0;
         for (int i = 0; i < 10; i++) {
+            beginTime = System.currentTimeMillis();
             System.out.println("schedule " + i + ":");
             gwo.gwo();
             if (gwo.finalSchedule.fitness < bestSchedule.fitness) {
@@ -192,6 +196,8 @@ public class GWO {
                 bestSchedule.fitness();
                 at=i;
             }
+            endTime=System.currentTimeMillis();
+            System.out.println("iter "+i+":"+(endTime-beginTime)/1000);
         }
         System.out.println("best schefule at:"+at);
         List<DateSchedule> dses = bestSchedule.getDateScheduleList();
