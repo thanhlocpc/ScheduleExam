@@ -5,8 +5,18 @@ import java.util.Objects;
 /*
 Môn thi đã được sắp lịch
  */
-public class SubjectSchedule implements Comparable<SubjectSchedule> {
+public class SubjectSchedule implements Comparable<SubjectSchedule>, Cloneable {
     private Subject subject;//môn thi
+    private ExamRoom room;//phòng thi
+    int shift;// ca thi 1,2,3,4
+
+    public SubjectSchedule clone() throws CloneNotSupportedException {
+        SubjectSchedule ss = (SubjectSchedule) super.clone();
+        ss.setSubject(this.subject.clone());
+        ss.setRoom(this.getRoom().clone());
+        ss.setShift(this.getShift());
+        return ss;
+    }
 
     public ExamRoom getRoom() {
         return room;
@@ -28,9 +38,6 @@ public class SubjectSchedule implements Comparable<SubjectSchedule> {
         this.subject = subject;
     }
 
-    private ExamRoom room;//phòng thi
-    int shift;// ca thi 1,2,3,4
-
     public SubjectSchedule(Subject subject, ExamRoom room, int shift) {
         this.subject = subject;
         this.room = room;
@@ -40,7 +47,8 @@ public class SubjectSchedule implements Comparable<SubjectSchedule> {
     @Override
     public String toString() {
         return room +
-                ", ca:" + (shift + 1)
+//                ", ca:" + (shift + 1)
+                "," + (shift + 1)
                 ;
     }
 

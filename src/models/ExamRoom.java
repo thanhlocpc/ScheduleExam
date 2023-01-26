@@ -12,7 +12,14 @@ public class ExamRoom implements Cloneable{
     private ClassRoom room;//phòng học để tổ chức thi
     private int index;//thứ tự phòng được chia từ tổng sỉ số của lớp đó
     private int capacity;
-
+    public ExamRoom clone() throws CloneNotSupportedException {
+        ExamRoom er=(ExamRoom) super.clone();
+        er.setRoom(room.clone());
+        er.setRegistrationClass(registrationClass.clone());
+        er.setIndex(this.index);
+        er.setCapacity(this.capacity);
+        return er;
+    }
     public RegistrationClass getRegistrationClass() {
         return registrationClass;
     }
@@ -44,11 +51,16 @@ public class ExamRoom implements Cloneable{
     @Override
     public String toString() {
         return
-                registrationClass.getName() + "-" + registrationClass.getId() +
-                        ", " + registrationClass.getGrade().getName() +
-                        ", " + room.getName() +
-                        ",index:" + index +
-                        ", sl:" + capacity
+//                registrationClass.getName() + "-" + registrationClass.getId() +
+//                        ", " + registrationClass.getGrade().getName() +
+//                        ", " + room.getName() +
+//                        ",index:" + index +
+//                        ", sl:" + capacity
+                registrationClass.getName() + "," + registrationClass.getId() +
+                        "," + registrationClass.getGrade().getName() +
+                        "," + room.getName() +
+                        "," + index +
+                        "," + capacity
                 ;
     }
 
@@ -78,8 +90,5 @@ public class ExamRoom implements Cloneable{
         return capacity;
     }
 
-    @Override
-    protected ExamRoom clone() throws CloneNotSupportedException {
-        return (ExamRoom) super.clone();
-    }
+
 }

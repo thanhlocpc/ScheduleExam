@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * - fitness
  *
  */
-public class Schedule implements Comparable<Schedule> {
+public class Schedule implements Comparable<Schedule> ,Cloneable{
     private List<DateSchedule> dateScheduleList;
     public double fitness;
     int remainSubject;
@@ -108,12 +108,26 @@ public class Schedule implements Comparable<Schedule> {
         this.subjectMap = subjectMap;
     }
 
-    public Schedule clone() {
-        Schedule cloneSchedule = new Schedule();
-        cloneSchedule.setDateScheduleList(this.dateScheduleList);
+    public Schedule clone() throws CloneNotSupportedException {
+        Schedule cloneSchedule = (Schedule)super.clone();
+        List dateScheduleListClone=new ArrayList();
+        for (DateSchedule d:dateScheduleList){
+            dateScheduleListClone.add(d.clone());
+        }
+        cloneSchedule.setDateScheduleList(dateScheduleListClone);
         cloneSchedule.setRemainSubject(this.remainSubject);
-        cloneSchedule.setSubjectList(this.subjectList);
-        cloneSchedule.setSubjectMap(new HashMap<>(this.subjectMap));
+        //
+        List<Subject> subjectListClone=new ArrayList<>();
+        for(Subject s:subjectList){
+            subjectListClone.add(s.clone());
+        }
+        cloneSchedule.setSubjectList(subjectListClone);
+        //
+        Map<Subject,Set<String>> subjectMapClone=new HashMap<>();
+        for (Map.Entry<Subject, Set<String>> entry : subjectMap.entrySet()) {
+            subjectMapClone.put(entry.getKey().clone(),new HashSet<>(entry.getValue()));
+        }
+        cloneSchedule.setSubjectMap(subjectMapClone);
         cloneSchedule.fitness();
         return cloneSchedule;
     }
@@ -136,12 +150,29 @@ public class Schedule implements Comparable<Schedule> {
         }
         if (dateChangeSet.toArray().length > 0) {
             DateSchedule d = getDateScheduleByDate((String) dateChangeSet.toArray()[0]);
+            long begin_add_new_subject = System.currentTimeMillis();
             d.addNewSubject(subjectChange);
+            long end_add_new_subject = System.currentTimeMillis();
+//            System.out.println("time add new subject:"+(end_add_new_subject-begin_add_new_subject));
+
         }
         this.fitness();
     }
 
-
+    public void changeSchedule2(Map.Entry<Subject, Set<String>> subjectChangeEntry) throws IOException {
+        Set<String> dateChangeSet = subjectChangeEntry.getValue();
+        Subject subjectChange = subjectChangeEntry.getKey();
+        for (DateSchedule ds : dateScheduleList) {
+            if (ds.isContainSubject(subjectChange)) {
+                ds.deleteSubject(subjectChange);
+            }
+        }
+        if (dateChangeSet.toArray().length > 0) {
+            DateSchedule d = getDateScheduleByDate((String) dateChangeSet.toArray()[0]);
+            d.addNewSubject(subjectChange);
+        }
+        this.fitness();
+    }
     public void generateSchedule(List<String> dates) throws IOException {
         List<DateSchedule> dateScheduleList = new ArrayList<>();
         List<Subject> remainSubjectList = new ArrayList<>(this.subjectList);
@@ -260,7 +291,7 @@ public class Schedule implements Comparable<Schedule> {
         // nhỏ hơn 4 thì phải chung 1 ca thi
         for (int i = 0; i < dateScheduleList.size(); i++) {
 
-            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e -> e).collect(Collectors.toList());
+            List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream().map(e -> e).filter(item->item.getSubject().getExamForms()!=2).collect(Collectors.toList());
 
             Map<String, Integer> mapCountRoomOfSubject = new HashMap<>();
             Map<String, Set<Integer>> mapCountShiftOfSubject = new HashMap<>();
@@ -309,7 +340,28 @@ public class Schedule implements Comparable<Schedule> {
     }
 
     public static void main(String[] args) throws IOException {
+//
+//        BufferedReader reader = new BufferedReader(new FileReader("result/scheduleRan"));
+//        String line = reader.readLine();
+//        String date="";
+//        while (line != null) {
+//            if(line.substring(0,1).compareTo("-")==0){
+//                date=line.substring(1);
+//            }else{
+//            String[] tokens = line.split(",");
+////            System.out.println("INSERT INTO `classroom`( `capacity_base`, `capacity_exam`, `name`, `classroom_type`) VALUES ("+tokens[2]+","+tokens[3]+",'"+tokens[0]+"',"+"'TH');");
+//            System.out.println("INSERT INTO `subject_schedule`( `date_exam`, `shift`, `classroom_id`, `course_id`, `subject_id`,`subject_schedule_index`,`candidate_amount`) VALUES ('"+date+"','"+tokens[6]+"',(select id from `classroom` where name='"+tokens[3]
+//                    +"'),(select id from `course` where name='"+tokens[1]+"'),(select id from `subject` where name='"+tokens[0]+"'),"+tokens[4]+","+tokens[5]+");");
+//            }
+//            line = reader.readLine();
+//        }
+        Set<String> setA=new HashSet<>();
+        setA.add("2022-12-7");
+        Set<String> setB=new HashSet<>();
+        setB.add("2022-12-7");
+        System.out.println(setA.containsAll(setB));
     }
+
 
 
     @Override

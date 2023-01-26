@@ -8,7 +8,7 @@ import java.util.Objects;
  **/
 
 // PHÒNG HỌC(VẬT LÍ)
-public class ClassRoom {
+public class ClassRoom implements Cloneable{
     private String id;
     private String name;
     private int capacityBase;
@@ -23,6 +23,19 @@ public class ClassRoom {
         this.type = type;
     }
 
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public ClassRoom clone(){
+        ClassRoom cl=new ClassRoom();
+        cl.setId(this.id);
+        cl.setName(this.name);
+        cl.setCapacityBase(this.capacityBase);
+        cl.setCapacityExam(this.capacityExam);
+        cl.setType(this.type);
+        return cl;
+    }
     public ClassRoom() {
     }
 

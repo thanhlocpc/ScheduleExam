@@ -6,9 +6,10 @@ import models.Subject;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class GWO {
-    public static final int N_WOLF = 50;
+    public static final int N_WOLF = 100;
     public static final int N_ITER = 200;
     public List<String> dates;
     public Schedule finalSchedule;
@@ -34,6 +35,7 @@ public class GWO {
      */
     public List<Map.Entry<Subject, Set<String>>> swapSquence(Schedule a, Schedule b) {
         List<Map.Entry<Subject, Set<String>>> aList = new ArrayList<>(a.getSubjectMap().entrySet());
+//        System.out.println("alist:"+aList.size());
         List<Map.Entry<Subject, Set<String>>> bList = new ArrayList<>(b.getSubjectMap().entrySet());
         List<Map.Entry<Subject, Set<String>>> sequence = new ArrayList<>();
         for (int i = 0; i < aList.size(); i++) {
@@ -47,8 +49,11 @@ public class GWO {
             sequence.add(aList.get(i));
 
         }
+//        System.out.println(sequence.size());
         Random rd = new Random();
         double c = rd.nextDouble();
+        if (c > 0.5)
+            c -= 0.5;
         int count = (int) (c * sequence.size());
         List<Map.Entry<Subject, Set<String>>> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -56,15 +61,37 @@ public class GWO {
             result.add(sequence.get(index));
             sequence.remove(index);
         }
+        Collections.shuffle(result);
         return result;
     }
 
-    public void gwo() throws IOException, CloneNotSupportedException {
+    public void gwo() throws IOException, CloneNotSupportedException, InterruptedException {
+        long begin_create_population = System.currentTimeMillis();
         Schedule[] schedules = createPopulation();
+        long end_create_population = System.currentTimeMillis();
+        System.out.println("time create population:" + ((end_create_population - begin_create_population) / 1));
         Arrays.sort(schedules);
         Schedule alpha = schedules[0];
         Schedule beta = schedules[1];
         Schedule delta = schedules[2];
+
+        double beginAlphaFitness = alpha.fitness;
+        System.out.println("beginAlphaFitness:" + beginAlphaFitness);
+//        alpha.getDateScheduleList().forEach(item->{
+//            System.out.println(item);
+//        });
+//
+//        double beginBetaFitness=beta.fitness;
+//        System.out.println("beginBetaFitness:"+beginBetaFitness);
+//        beta.getDateScheduleList().forEach(item->{
+//            System.out.println(item);
+//        });
+//
+//        double beginDeltaFitness=delta.fitness;
+//        System.out.println("beginDeltaFitness:"+beginDeltaFitness);
+//        delta.getDateScheduleList().forEach(item->{
+//            System.out.println(item);
+//        });
 
         int iter = 0;
         int bestIter = 0;
@@ -72,25 +99,51 @@ public class GWO {
         long begin = System.currentTimeMillis();
         whileloop:
         while (iter < N_ITER) {
-            iter++;
+            System.out.println("iter:" + iter + "======");
+            long begin_iter = System.currentTimeMillis();
+
+
             for (int i = 3; i < N_WOLF; i++) {
-                Schedule scheduleInPopulation = schedules[i];
+                Schedule scheduleInPopulation = (Schedule) schedules[i].clone();
+//                System.out.println("is accepted at begining:"+scheduleInPopulation.isAccepted());
+//                System.out.println("before swap:" + scheduleInPopulation.fitness);
                 List<Map.Entry<Subject, Set<String>>> swapList = new ArrayList<>();
                 swapList.addAll(swapSquence(alpha, scheduleInPopulation));
                 swapList.addAll(swapSquence(beta, scheduleInPopulation));
                 swapList.addAll(swapSquence(delta, scheduleInPopulation));
-                Schedule bestChange = scheduleInPopulation.clone();
+//                System.out.println("swap amount:"+swapList.size());
+                Schedule bestChange = (Schedule) scheduleInPopulation.clone();
+//                System.out.println("is bestchange accepted at begining:"+bestChange.isAccepted());
                 for (Map.Entry<Subject, Set<String>> entry : swapList) {
+                    long begin_change_schedule = System.currentTimeMillis();
+//                    scheduleInPopulation=schedules[i].clone();
                     scheduleInPopulation.changeSchedule(entry);
+                    long end_change_schedule = System.currentTimeMillis();
+//                    System.out.println("time change schedule:"+(end_change_schedule-begin_change_schedule));
                     scheduleInPopulation.fitness();
+                    if (scheduleInPopulation.isAccepted()) {
+//                        System.out.println("is accepted :");
+                        schedules[i]= (Schedule) scheduleInPopulation.clone();
+//                        System.out.println("is schedule acepted after accepted :"+schedules[i].isAccepted());
+                        if ((scheduleInPopulation.fitness < bestChange.fitness)) {
+                            bestChange = (Schedule) scheduleInPopulation.clone();
+                            bestChange.fitness();
 
-                    if (scheduleInPopulation.fitness < bestChange.fitness) {
-                        bestChange = scheduleInPopulation.clone();
-                        bestChange.fitness();
+                        }
                     }
+//                    System.out.println("best change after swap:"+bestChange.isAccepted());
                 }
+//                System.out.println("schedule i is accepted after swap:"+schedules[i].isAccepted());
+//                System.out.println("bestchange is accepted after swap:"+bestChange.isAccepted());
+//                System.out.println("is point in the same object:"+(bestChange==scheduleInPopulation));
                 scheduleInPopulation = bestChange.clone();
                 scheduleInPopulation.fitness();
+                schedules[i]=scheduleInPopulation;
+//                System.out.println("after swap:" + scheduleInPopulation.fitness);
+//                System.out.println("is right swap:" + schedules[i].fitness);
+//                System.out.println("is accepted:" + bestChange.isAccepted());
+//                System.out.println("wolf:" + i + "============");
+//                TimeUnit.MILLISECONDS.sleep(500);
                 if (scheduleInPopulation.isAccepted()) {
                     if (scheduleInPopulation.fitness < alpha.fitness) {
                         Schedule temp = delta.clone();
@@ -99,27 +152,42 @@ public class GWO {
                         alpha = scheduleInPopulation.clone();
                         schedules[i] = temp;
                         bestIter = iter;
+                        System.out.println("change at iter:" + (bestIter) + " with fitness:" + alpha.fitness);
+//                        alpha.getDateScheduleList().forEach(item->{
+//                            System.out.println(item);
+//                        });
+
+
                     } else if (scheduleInPopulation.fitness < beta.fitness) {
                         Schedule temp = delta.clone();
                         delta = beta.clone();
                         beta = scheduleInPopulation.clone();
                         schedules[i] = temp;
-//                        bestIter = iter;
+                        System.out.println("change at iter:" + (iter) + " with beta fitness:" + beta.fitness);
+//                        beta.getDateScheduleList().forEach(item->{
+//                            System.out.println(item);
+//                        });
                     } else if (scheduleInPopulation.fitness < delta.fitness) {
                         Schedule temp = delta.clone();
                         delta = scheduleInPopulation.clone();
                         schedules[i] = temp;
-//                        bestIter = iter;
+                        System.out.println("change at iter:" + (iter) + " with delta fitness:" + delta.fitness);
+//                        delta.getDateScheduleList().forEach(item->{
+//                            System.out.println(item);
+//                        });
                     }
                 }
             }
+            long end_iter = System.currentTimeMillis();
+            System.out.println("time of iter " + iter + ":" + ((end_iter - begin_iter) / 1));
+            iter++;
         }
 
-        long end_find_schedule = System.currentTimeMillis();
         Schedule bestSchedultBeforeChange = alpha.clone();
         bestSchedultBeforeChange.fitness();
 
-        long end_best_schedule = System.currentTimeMillis();
+
+        System.out.println("begin alpha fitness:" + beginAlphaFitness);
         System.out.println("best iter:" + bestIter);
         System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
         System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
@@ -167,43 +235,49 @@ public class GWO {
 
     }
 
-    public static void main(String[] args) throws IOException, CloneNotSupportedException {
+    public static void main(String[] args) throws IOException, CloneNotSupportedException, InterruptedException {
         List<String> dates = new ArrayList<>();
-        dates.add("12/10/2022");
-        dates.add("13/10/2022");
-        dates.add("14/10/2022");
-        dates.add("15/10/2022");
-        dates.add("16/10/2022");
-        dates.add("17/10/2022");
-        dates.add("18/10/2022");
-        dates.add("19/10/2022");
-        dates.add("20/10/2022");
+        dates.add("2022-10-12");
+        dates.add("2022-10-13");
+        dates.add("2022-10-14");
+        dates.add("2022-10-15");
+        dates.add("2022-10-16");
+        dates.add("2022-10-17");
+        dates.add("2022-10-18");
+        dates.add("2022-10-19");
+        dates.add("2022-10-20");
         GWO gwo = new GWO(dates);
+        long beginTime = 0;
+        long endTime = 0;
 
-        Schedule[] schedules = gwo.createPopulation();
+//        Schedule[] schedules = gwo.createPopulation();
+        beginTime = System.currentTimeMillis();
+
         gwo.gwo();
         Schedule bestSchedule = gwo.finalSchedule;
-        int at=0;
+        endTime = System.currentTimeMillis();
+        System.out.println("iter " + 0 + ":" + (endTime - beginTime) / 60000);
+        int at = 0;
 
-        long beginTime=0;
-        long endTime=0;
-        for (int i = 0; i < 10; i++) {
+
+        for (int i = 1; i < 10; i++) {
+            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
             System.out.println("schedule " + i + ":");
             gwo.gwo();
             if (gwo.finalSchedule.fitness < bestSchedule.fitness) {
                 bestSchedule = gwo.finalSchedule.clone();
                 bestSchedule.fitness();
-                at=i;
+                at = i;
             }
-            endTime=System.currentTimeMillis();
-            System.out.println("iter "+i+":"+(endTime-beginTime)/1000);
+            endTime = System.currentTimeMillis();
+            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
+            System.out.println("==========end==============");
         }
-        System.out.println("best schefule at:"+at);
+        System.out.println("best schefule at:" + at);
         List<DateSchedule> dses = bestSchedule.getDateScheduleList();
         for (int i = 0; i < dses.size(); i++) {
             System.out.println(dses.get(i).toString());
-
         }
     }
 }

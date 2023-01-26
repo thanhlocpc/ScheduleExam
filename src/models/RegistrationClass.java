@@ -9,14 +9,22 @@ import java.util.Objects;
  **/
 
 // LỚP ĐĂNG KÍ HỌC PHẦN
-public class RegistrationClass {
+public class RegistrationClass implements Cloneable{
     private String id;
     private String name;
     private Grade grade;
     private int estimatedClassSize; // sĩ số lớp dự kiến
     private int estimatedClassSizeReal; // sĩ số lớp thực tế
     private List<Student> listStudent;
-
+    public RegistrationClass clone() throws CloneNotSupportedException {
+        RegistrationClass rc=(RegistrationClass) super.clone();
+        rc.setName(this.name);
+        rc.setId(this.id);
+        rc.setGrade(this.grade.clone());
+        rc.setEstimatedClassSize(this.estimatedClassSize);
+        rc.setEstimatedClassSizeReal(this.estimatedClassSizeReal);
+        return rc;
+    }
 
     @Override
     public boolean equals(Object o) {
