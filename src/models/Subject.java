@@ -8,7 +8,7 @@ public class Subject {
     private String id;
     private String name;
     private int credit;
-    private int examForms; // hình thức thi: 0 thi lt, 1 thi thực hành
+    private int examForms; // hình thức thi: 0 thi lt, 1 thi thực hành,2 :vaans dap
 
     public Subject(String id, String name, int credit, int examForms) {
         this.id = id;
@@ -16,7 +16,14 @@ public class Subject {
         this.credit = credit;
         this.examForms = examForms;
     }
-
+    public Subject clone(){
+        Subject s=new Subject();
+        s.setId(this.getId());
+        s.setName(this.getName());
+        s.setCredit(this.getCredit());
+        s.setExamForms(this.getExamForms());
+        return s;
+    }
     @Override
     public String toString() {
         return "Subject{" +

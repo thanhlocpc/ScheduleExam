@@ -10,6 +10,13 @@ public class Grade {
     private String id;
     private String name;
 
+    public Grade clone() {
+        Grade cloneGrade = new Grade();
+        cloneGrade.setId(this.id);
+        cloneGrade.setName(this.name);
+        return cloneGrade;
+    }
+
     public Grade(String id, String name) {
         this.id = id;
         this.name = name;
