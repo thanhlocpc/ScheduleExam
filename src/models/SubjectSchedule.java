@@ -47,8 +47,8 @@ public class SubjectSchedule implements Comparable<SubjectSchedule>, Cloneable {
     @Override
     public String toString() {
         return room +
-//                ", ca:" + (shift + 1)
-                "," + (shift + 1)
+                ", ca:" + (shift + 1)
+//                "," + (shift + 1)
                 ;
     }
 

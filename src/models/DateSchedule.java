@@ -979,7 +979,8 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable{
     }
 
     public String toString() {
-        String s = "-"+date + "\n";
+//        String s = "-"+date + "\n";
+        String s = date + "\n";
         Collections.sort(subjectSchedules);
         for (SubjectSchedule ss : subjectSchedules) {
             s += (ss.toString() + "\n");

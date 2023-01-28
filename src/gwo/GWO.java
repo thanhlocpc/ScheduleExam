@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class GWO {
     public static final int N_WOLF = 100;
-    public static final int N_ITER = 200;
+    public static final int N_ITER = 500;
     public List<String> dates;
     public Schedule finalSchedule;
 
@@ -99,7 +99,7 @@ public class GWO {
         long begin = System.currentTimeMillis();
         whileloop:
         while (iter < N_ITER) {
-            System.out.println("iter:" + iter + "======");
+//            System.out.println("iter:" + iter + "======");
             long begin_iter = System.currentTimeMillis();
 
 
@@ -179,7 +179,7 @@ public class GWO {
                 }
             }
             long end_iter = System.currentTimeMillis();
-            System.out.println("time of iter " + iter + ":" + ((end_iter - begin_iter) / 1));
+//            System.out.println("time of iter " + iter + ":" + ((end_iter - begin_iter) / 1));
             iter++;
         }
 
