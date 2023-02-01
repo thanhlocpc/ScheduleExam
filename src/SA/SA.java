@@ -28,7 +28,7 @@ public class SA {
         int T = 10000;
         Schedule current = createRandomSchedule();
         Schedule next = null;
-        while (current.fitness > 5500) {
+        while (current.fitness > 5000) {
             next = createRandomSchedule();
             double delta = next.fitness - current.fitness;
             if (delta < 0) {
