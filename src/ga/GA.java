@@ -52,10 +52,10 @@ public class GA {
 
                 Schedule child = preproduce(x, y);
                 if(Math.random() > MUTATION_RATE) mutate(child);
-//                child.fitness();
-//                if(child.fitness < 5000) {
-//                    return child;
-//                }
+                child.fitness();
+                if(child.fitness < 5000) {
+                    return child;
+                }
 
                 newPopulation.add(child);
             }
