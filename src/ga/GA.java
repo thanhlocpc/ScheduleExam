@@ -1,5 +1,6 @@
 package ga;
 
+import SA.SA;
 import models.DateSchedule;
 import models.Schedule;
 
@@ -24,7 +25,7 @@ public class GA {
     public GA(List<String> dates) throws IOException {
         this.dates = dates;
         population = new ArrayList<>(POP_SIZE);
-        for (int i = 0; i < population.size(); i++) {
+        for (int i = 0; i < POP_SIZE; i++) {
             population.add(createRandomSchedule());
         }
     }
@@ -51,10 +52,10 @@ public class GA {
 
                 Schedule child = preproduce(x, y);
                 if(Math.random() > MUTATION_RATE) mutate(child);
-                child.fitness();
-                if(child.fitness < 5000) {
-                    return child;
-                }
+//                child.fitness();
+//                if(child.fitness < 5000) {
+//                    return child;
+//                }
 
                 newPopulation.add(child);
             }
@@ -86,5 +87,34 @@ public class GA {
 
     public Schedule getParentByRandomSelection() {
         return population.get(rd.nextInt(POP_SIZE));
+    }
+
+    public static void main(String[] args) throws IOException, CloneNotSupportedException {
+        List<String> dates = new ArrayList<>();
+        dates.add("2022-10-12");
+        dates.add("2022-10-13");
+        dates.add("2022-10-14");
+        dates.add("2022-10-15");
+        dates.add("2022-10-16");
+        dates.add("2022-10-17");
+        dates.add("2022-10-18");
+        dates.add("2022-10-19");
+        dates.add("2022-10-20");
+        long beginTime = 0;
+        long endTime = 0;
+        for (int i = 0; i < 10; i++) {
+            System.out.println("==========begin "+ i+" ==============");
+            beginTime = System.currentTimeMillis();
+            System.out.println("schedule " + i + ":");
+            GA sa = new GA(dates);
+            Schedule result = sa.execute();
+            System.out.println(result.fitness);
+            result.getDateScheduleList().forEach(item -> {
+                System.out.println(item);
+            });
+            endTime = System.currentTimeMillis();
+            System.out.println("iter "+i+":"+(endTime-beginTime)/60000);
+            System.out.println("==========end==============");
+        }
     }
 }
