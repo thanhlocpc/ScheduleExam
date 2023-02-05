@@ -1,6 +1,6 @@
-package GA;
+package ga;
 
-import SA.SA;
+import models.DateSchedule;
 import models.Schedule;
 import models.Subject;
 
@@ -39,8 +39,8 @@ public class GA {
                 Schedule x=getParentByRandomSelection();
                 Schedule y=getParentByRandomSelection();
                 Schedule child=preproduce3(x,y);
-//                if (rd.nextInt(100) / 100 <= 0.03)
-//                    mutate(child);
+                if (rd.nextInt(100) <= 0.3)
+                    mutate(child);
 
                 if (child.fitness <4500) {
                     System.out.println("iter: " + iter);
@@ -90,8 +90,16 @@ public class GA {
         return result;
     }
 
-    public void mutate(Schedule node) {
-
+    public void mutate(Schedule child) {
+        int count = rd.nextInt(5);
+        for (int i = 0; i < count; i++) {
+            int a = rd.nextInt(dates.size());
+            int b = rd.nextInt(dates.size());
+            DateSchedule dateSchedule1 = child.getDateScheduleByDate(dates.get(a));
+            DateSchedule dateSchedule2 = child.getDateScheduleByDate(dates.get(b));
+            dateSchedule1.setDate(dates.get(a));
+            dateSchedule2.setDate(dates.get(b));
+        }
     }
 
     public static void main(String[] args) throws IOException, CloneNotSupportedException {
