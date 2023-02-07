@@ -49,7 +49,7 @@ public class GA {
                 if (rd.nextInt(100) <= 0.3)
                     mutate(child);
 
-                if (child.fitness < 4500) {
+                if (child.fitness < 4000) {
                     System.out.println("iter: " + iter);
                     return child;
                 }
@@ -78,9 +78,41 @@ public class GA {
         List<Map.Entry<Subject, Set<String>>> sequence = new ArrayList<>();
         List<Map.Entry<Subject, Set<String>>> subjectMap1 = new ArrayList<>(x.getSubjectMap().entrySet());
         List<Map.Entry<Subject, Set<String>>> subjectMap2 = new ArrayList<>(y.getSubjectMap().entrySet());
-        for (int i = 0; i < subjectMap1.size(); i++) {
+        for (int i = 0; i < subjectMap2.size(); i++) {
             if (rd.nextInt(10) < 5) {
                 sequence.add(subjectMap2.get(i));
+            }
+        }
+        for (Map.Entry<Subject, Set<String>> entry : sequence) {
+            changeSchedule.changeSchedule(entry);
+            changeSchedule.fitness();
+            if (changeSchedule.isAccepted()) {
+
+                if ((changeSchedule.fitness < result.fitness)) {
+                    result = (Schedule) changeSchedule.clone();
+                    result.fitness();
+
+                }
+            }
+        }
+        return result;
+    }
+
+
+    public Schedule preproduce2(Schedule x, Schedule y) throws CloneNotSupportedException, IOException {
+        Schedule result = x.clone();
+        Schedule changeSchedule = x.clone();
+        List<Map.Entry<Subject, Set<String>>> sequence = new ArrayList<>();
+        List<Map.Entry<Subject, Set<String>>> subjectMap1 = new ArrayList<>(x.getSubjectMap().entrySet());
+        List<Map.Entry<Subject, Set<String>>> subjectMap2 = new ArrayList<>(y.getSubjectMap().entrySet());
+        for (int i = 0; i < subjectMap2.size(); i++) {
+            if (rd.nextInt(10) < 5) {
+                sequence.add(subjectMap2.get(i));
+            }
+        }
+        for (int i = 0; i < subjectMap1.size(); i++) {
+            if (!sequence.contains(subjectMap2.get(i))) {
+                sequence.add(subjectMap1.get(i));
             }
         }
         for (Map.Entry<Subject, Set<String>> entry : sequence) {
