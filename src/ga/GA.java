@@ -1,6 +1,7 @@
 package GA;
 
-import SA.SA;
+
+
 import models.Schedule;
 import models.Subject;
 
@@ -18,7 +19,7 @@ public class GA {
     }
 
     public List<Schedule> createPopulation() throws IOException {
-         Schedule temp;
+        Schedule temp;
         for (int i = 0; i < POP_SIZE; i++) {
             while (true) {
                 temp = new Schedule(dates);
@@ -31,7 +32,7 @@ public class GA {
         return schedules;
     }
     public Schedule ga() throws IOException, CloneNotSupportedException {
-         createPopulation();
+        createPopulation();
         int iter = 0;
         while (iter < N_ITER) {
             List<Schedule> newSchedule=new ArrayList<>();

@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  **/
 
 // LỚP ĐĂNG KÍ HỌC PHẦN
-public class RegistrationClass implements Cloneable{
+public class RegistrationClass implements Cloneable, Serializable {
     private String id;
     private String name;
     private Grade grade;

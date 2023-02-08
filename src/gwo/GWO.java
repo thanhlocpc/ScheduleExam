@@ -1,10 +1,11 @@
 package gwo;
 
+import models.ChangeScheduleRequest;
 import models.DateSchedule;
 import models.Schedule;
 import models.Subject;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +14,9 @@ public class GWO {
     public static final int N_ITER = 500;
     public List<String> dates;
     public Schedule finalSchedule;
+    public GWO(){
 
+    };
     public GWO(List<String> dates) {
         this.dates = dates;
     }
@@ -235,7 +238,110 @@ public class GWO {
 
     }
 
-    public static void main(String[] args) throws IOException, CloneNotSupportedException, InterruptedException {
+    public  byte[] generateNewSchedule(int generateTime) throws IOException, InterruptedException, CloneNotSupportedException {
+        long beginTime = 0;
+        long endTime = 0;
+
+//        Schedule[] schedules = gwo.createPopulation();
+        beginTime = System.currentTimeMillis();
+
+        this.gwo();
+        Schedule bestSchedule = finalSchedule;
+        endTime = System.currentTimeMillis();
+        System.out.println("iter " + 0 + ":" + (endTime - beginTime) / 60000);
+        int at = 0;
+        for (int i = 1; i < generateTime; i++) {
+            System.out.println("==========begin " + i + " ==============");
+            beginTime = System.currentTimeMillis();
+            System.out.println("schedule " + i + ":");
+            gwo();
+            if (finalSchedule.fitness < bestSchedule.fitness) {
+                bestSchedule =finalSchedule.clone();
+                bestSchedule.fitness();
+                at = i;
+            }
+            endTime = System.currentTimeMillis();
+            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
+            System.out.println("==========end==============");
+        }
+        System.out.println("best schefule at:" + at);
+
+//        FileOutputStream fileOut = new FileOutputStream(this.sourceFolder+"/result");
+//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//        objectOut.writeObject(bestSchedule);
+//        objectOut.close();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(bestSchedule);
+        byte[] buff = bos.toByteArray();
+        return buff;
+    }
+    public  List<Subject> getSubjectList() throws IOException {
+        List<Subject> subjectList = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(new FileReader("data/subject"));
+        String line = reader.readLine();
+        while (line != null) {
+            String[] tokens = line.split(",");
+            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3])));
+            line = reader.readLine();
+        }
+        return subjectList;
+    }
+    public Schedule convertByteToSchedule(byte[] array) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bis=new ByteArrayInputStream(array);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Schedule readSchedule= (Schedule) ois.readObject();
+        ois.close();
+        return readSchedule;
+    }
+    public  byte[] changeSchedule(List<ChangeScheduleRequest> changeScheduleRequestList, Schedule schedule) throws IOException, CloneNotSupportedException {
+        List<Subject> subjectList = getSubjectList();
+        Map<Subject, Set<String>> map = new HashMap<>();
+        boolean isChange=false;
+        changeScheduleRequestList.
+                forEach(item -> map.put(subjectList.
+                        stream().filter(subject -> subject.getId().
+                                equals(item.getSubject())).findAny().get(), Collections.singleton(item.getDate())));
+        List<Map.Entry<Subject, Set<String>>> swapList = new ArrayList<>(map.entrySet());
+
+        Schedule bestChange = (Schedule) schedule.clone();
+//                System.out.println("is bestchange accepted at begining:"+bestChange.isAccepted());
+        Schedule scheduleClone = (Schedule) schedule.clone();
+        for (int i = 0; i < 100; i++) {
+            System.out.println("index:"+i);
+            for (Map.Entry<Subject, Set<String>> entry : swapList) {
+//                    scheduleInPopulation=schedules[i].clone();
+                scheduleClone.changeSchedule(entry);
+//                    System.out.println("time change schedule:"+(end_change_schedule-begin_change_schedule));
+
+//                    System.out.println("best change after swap:"+bestChange.isAccepted());
+            }
+            scheduleClone.fitness();
+            if (scheduleClone.isAccepted()) {
+                System.out.println("is accepted :");
+//                        System.out.println("is schedule acepted after accepted :"+schedules[i].isAccepted());
+//                if ((scheduleClone.fitness < bestChange.fitness)) {
+//                    bestChange = (Schedule) scheduleClone.clone();
+//                    bestChange.fitness();
+//
+//                }
+                bestChange = (Schedule) scheduleClone.clone();
+                bestChange.fitness();
+                isChange=true;
+            }
+            scheduleClone= (Schedule) schedule.clone();
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(bestChange);
+        byte[] buff = bos.toByteArray();
+//        FileOutputStream fileOut = new FileOutputStream(sourceChangeFolder+"/result");
+//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//        objectOut.writeObject(bestChange);
+//        objectOut.close();
+        return isChange? buff:null;
+    }
+    public static void main(String[] args) throws IOException, CloneNotSupportedException, InterruptedException, ClassNotFoundException {
         List<String> dates = new ArrayList<>();
         dates.add("2022-10-12");
         dates.add("2022-10-13");
@@ -247,37 +353,48 @@ public class GWO {
         dates.add("2022-10-19");
         dates.add("2022-10-20");
         GWO gwo = new GWO(dates);
-        long beginTime = 0;
-        long endTime = 0;
 
-//        Schedule[] schedules = gwo.createPopulation();
-        beginTime = System.currentTimeMillis();
+        byte[] bestSchedule=gwo.generateNewSchedule(1);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(bestSchedule);
+        byte[] buff = bos.toByteArray();
+        oos.close();
 
-        gwo.gwo();
-        Schedule bestSchedule = gwo.finalSchedule;
-        endTime = System.currentTimeMillis();
-        System.out.println("iter " + 0 + ":" + (endTime - beginTime) / 60000);
-        int at = 0;
+        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Schedule readSchedule= (Schedule) ois.readObject();
+        ois.close();
 
+//        FileInputStream fileInt=new FileInputStream("data/result");
+//        ObjectInputStream objectInputStream=new ObjectInputStream(fileInt);
+//        Schedule readSchedule= (Schedule) objectInputStream.readObject();
+//        objectInputStream.close();
 
-        for (int i = 1; i < 10; i++) {
-            System.out.println("==========begin " + i + " ==============");
-            beginTime = System.currentTimeMillis();
-            System.out.println("schedule " + i + ":");
-            gwo.gwo();
-            if (gwo.finalSchedule.fitness < bestSchedule.fitness) {
-                bestSchedule = gwo.finalSchedule.clone();
-                bestSchedule.fitness();
-                at = i;
-            }
-            endTime = System.currentTimeMillis();
-            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
-            System.out.println("==========end==============");
+        System.out.println("========schedule read from file");
+        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
+        for (int i = 0; i < dses1.size(); i++) {
+            System.out.println(dses1.get(i).toString());
         }
-        System.out.println("best schefule at:" + at);
-        List<DateSchedule> dses = bestSchedule.getDateScheduleList();
+        System.out.println("========schedule actual");
+        List<DateSchedule> dses = readSchedule.getDateScheduleList();
+
         for (int i = 0; i < dses.size(); i++) {
             System.out.println(dses.get(i).toString());
+//            System.out.println("lt class map");
+//            dses.get(i).getLtClassMap().entrySet().forEach(System.out::println);
+//            System.out.println("th class map");
+//            dses.get(i).getThClassMap().entrySet().forEach(System.out::println);
+//            System.out.println("used list lt");
+//            dses.get(i).getUsedListLT().forEach(item-> System.out.println(item[0]+"-"+item[1]));
+//            System.out.println("used list th");
+//            dses.get(i).getUsedListTH().forEach(item-> System.out.println(item[0]+"-"+item[1]));
+//            System.out.println("remain subject:");
+//            dses.get(i).getRemainSubject().forEach(System.out::println);
+//            System.out.println("prepared subject:");
+//            dses.get(i).getPreparedSubject().forEach(System.out::println);
+
+
         }
     }
 }

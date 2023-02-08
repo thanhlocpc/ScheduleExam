@@ -1,12 +1,14 @@
 package models;
 
+import java.io.Serializable;
+
 /**
  * @author : Thành Lộc
  * @since : 10/7/2022, Fri
  **/
 
 // khối lớp: DH19DTA, DH19DTB....
-public class Grade {
+public class Grade implements  Serializable {
     private String id;
     private String name;
 

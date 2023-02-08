@@ -1,9 +1,6 @@
 package models;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +10,7 @@ import java.util.stream.Collectors;
  * - fitness
  *
  */
-public class Schedule implements Comparable<Schedule> ,Cloneable{
+public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
     private List<DateSchedule> dateScheduleList;
     public double fitness;
     int remainSubject;

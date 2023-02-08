@@ -1,10 +1,12 @@
 package models;
 
+import java.io.Serializable;
+
 /**
  * @author : Thành Lộc
  * @since : 10/7/2022, Fri
  **/
-public class Subject {
+public class Subject implements  Serializable {
     private String id;
     private String name;
     private int credit;

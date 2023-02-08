@@ -1,16 +1,13 @@
 package models;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /*
 Lịch thi theo ngày
  */
-public class DateSchedule implements Comparable<DateSchedule>,Cloneable{
+public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Serializable {
     private String date;//ngày
 
     public String getDate() {

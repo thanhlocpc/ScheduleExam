@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Objects;
  **/
 
 // PHÒNG HỌC(VẬT LÍ)
-public class ClassRoom implements Cloneable{
+public class ClassRoom implements Cloneable, Serializable {
     private String id;
     private String name;
     private int capacityBase;

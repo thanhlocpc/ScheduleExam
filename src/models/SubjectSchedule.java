@@ -1,11 +1,12 @@
 package models;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /*
 Môn thi đã được sắp lịch
  */
-public class SubjectSchedule implements Comparable<SubjectSchedule>, Cloneable {
+public class SubjectSchedule implements Comparable<SubjectSchedule>, Cloneable, Serializable {
     private Subject subject;//môn thi
     private ExamRoom room;//phòng thi
     int shift;// ca thi 1,2,3,4
