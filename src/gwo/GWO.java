@@ -7,11 +7,10 @@ import models.Subject;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class GWO {
-    public static final int N_WOLF = 100;
-    public static final int N_ITER = 500;
+    public static final int N_WOLF = 50;
+    public static final int N_ITER = 200;
     public List<String> dates;
     public Schedule finalSchedule;
     public GWO(){
@@ -24,9 +23,12 @@ public class GWO {
     public Schedule[] createPopulation() throws IOException {
         Schedule[] schedules = new Schedule[N_WOLF];
         for (int i = 0; i < schedules.length; i++) {
+            int j=0;
             while (true) {
+                j++;
                 schedules[i] = new Schedule(dates);
                 if (schedules[i].isAccepted())
+                    System.out.println(i+"=="+j);
                     break;
             }
         }
@@ -80,21 +82,21 @@ public class GWO {
 
         double beginAlphaFitness = alpha.fitness;
         System.out.println("beginAlphaFitness:" + beginAlphaFitness);
-//        alpha.getDateScheduleList().forEach(item->{
-//            System.out.println(item);
-//        });
+        alpha.getDateScheduleList().forEach(item->{
+            System.out.println(item);
+        });
 //
 //        double beginBetaFitness=beta.fitness;
 //        System.out.println("beginBetaFitness:"+beginBetaFitness);
-//        beta.getDateScheduleList().forEach(item->{
-//            System.out.println(item);
-//        });
+        beta.getDateScheduleList().forEach(item->{
+            System.out.println(item);
+        });
 //
 //        double beginDeltaFitness=delta.fitness;
 //        System.out.println("beginDeltaFitness:"+beginDeltaFitness);
-//        delta.getDateScheduleList().forEach(item->{
-//            System.out.println(item);
-//        });
+        delta.getDateScheduleList().forEach(item->{
+            System.out.println(item);
+        });
 
         int iter = 0;
         int bestIter = 0;
@@ -196,11 +198,11 @@ public class GWO {
         System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
         this.finalSchedule = bestSchedultBeforeChange.clone();
         finalSchedule.fitness();
-//        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
-//        for (int i = 0; i < dses.size(); i++) {
-//            System.out.println(dses.get(i).toString());
-//
-//        }
+        List<DateSchedule> dses = finalSchedule.getDateScheduleList();
+        for (int i = 0; i < dses.size(); i++) {
+            System.out.println(dses.get(i).toString());
+
+        }
 
 //        System.out.println("best schedule fitness with change date schedule:" + bestSche.fitness);
 //        System.out.println("is accepted:" + bestSche.isAccepted());
@@ -282,7 +284,7 @@ public class GWO {
         String line = reader.readLine();
         while (line != null) {
             String[] tokens = line.split(",");
-            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3])));
+            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));
             line = reader.readLine();
         }
         return subjectList;
@@ -353,48 +355,38 @@ public class GWO {
         dates.add("2022-10-19");
         dates.add("2022-10-20");
         GWO gwo = new GWO(dates);
-
-        byte[] bestSchedule=gwo.generateNewSchedule(1);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(bestSchedule);
-        byte[] buff = bos.toByteArray();
-        oos.close();
-
-        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        Schedule readSchedule= (Schedule) ois.readObject();
-        ois.close();
+        gwo.gwo();
+//        byte[] bestSchedule=gwo.generateNewSchedule(1);
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ObjectOutputStream oos = new ObjectOutputStream(bos);
+//        oos.writeObject(bestSchedule);
+//        byte[] buff = bos.toByteArray();
+//        oos.close();
+//
+//        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
+//        ObjectInputStream ois = new ObjectInputStream(bis);
+//        Schedule readSchedule= (Schedule) ois.readObject();
+//        ois.close();
 
 //        FileInputStream fileInt=new FileInputStream("data/result");
 //        ObjectInputStream objectInputStream=new ObjectInputStream(fileInt);
 //        Schedule readSchedule= (Schedule) objectInputStream.readObject();
 //        objectInputStream.close();
 
-        System.out.println("========schedule read from file");
-        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
-        for (int i = 0; i < dses1.size(); i++) {
-            System.out.println(dses1.get(i).toString());
-        }
-        System.out.println("========schedule actual");
-        List<DateSchedule> dses = readSchedule.getDateScheduleList();
-
-        for (int i = 0; i < dses.size(); i++) {
-            System.out.println(dses.get(i).toString());
-//            System.out.println("lt class map");
-//            dses.get(i).getLtClassMap().entrySet().forEach(System.out::println);
-//            System.out.println("th class map");
-//            dses.get(i).getThClassMap().entrySet().forEach(System.out::println);
-//            System.out.println("used list lt");
-//            dses.get(i).getUsedListLT().forEach(item-> System.out.println(item[0]+"-"+item[1]));
-//            System.out.println("used list th");
-//            dses.get(i).getUsedListTH().forEach(item-> System.out.println(item[0]+"-"+item[1]));
-//            System.out.println("remain subject:");
-//            dses.get(i).getRemainSubject().forEach(System.out::println);
-//            System.out.println("prepared subject:");
-//            dses.get(i).getPreparedSubject().forEach(System.out::println);
-
-
-        }
+//        System.out.println("========schedule read from file");
+//        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
+//        for (int i = 0; i < dses1.size(); i++) {
+//            System.out.println(dses1.get(i).toString());
+//        }
+//        System.out.println("is finish:" +readSchedule.isAccepted());
+//        System.out.println("========schedule actual");
+//        List<DateSchedule> dses = readSchedule.getDateScheduleList();
+//
+//        for (int i = 0; i < dses.size(); i++) {
+//            System.out.println(dses.get(i).toString());
+//
+//
+//
+//        }
     }
 }

@@ -7,7 +7,7 @@ import java.util.Objects;
  * @author : Thành Lộc
  * @since : 10/7/2022, Fri
  **/
-
+//checked add building id
 // PHÒNG HỌC(VẬT LÍ)
 public class ClassRoom implements Cloneable, Serializable {
     private String id;
@@ -15,13 +15,14 @@ public class ClassRoom implements Cloneable, Serializable {
     private int capacityBase;
     private int capacityExam;
     private int type;//0:LT,1:TH
-
-    public ClassRoom(String id, String name, int capacityBase, int capacityExam, int type) {
+    private int buildingId;
+    public ClassRoom(String id, String name, int capacityBase, int capacityExam, int type, int buildingId) {
         this.id = id;
         this.name = name;
         this.capacityBase = capacityBase;
         this.capacityExam = capacityExam;
         this.type = type;
+        this.buildingId = buildingId;
     }
 
     public void setType(int type) {
