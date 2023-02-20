@@ -314,7 +314,7 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
         while (line != null) {
             String[] tokens = line.split(",");
             if (tokens[0].equals(id)) {
-                classRoom = new ClassRoom(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]));
+                classRoom = new ClassRoom(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5]));//add builing id
                 break;
             }
             line = reader.readLine();
@@ -328,7 +328,7 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
         String line = reader.readLine();
         while (line != null) {
             String[] tokens = line.split(",");
-            classRooms.add(new ClassRoom(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4])));
+            classRooms.add(new ClassRoom(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));//add builing id
             line = reader.readLine();
         }
         return classRooms;
@@ -340,7 +340,7 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
         String line = reader.readLine();
         while (line != null) {
             String[] tokens = line.split(",");
-            classRooms.add(new ClassRoom(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4])));
+            classRooms.add(new ClassRoom(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));//add builing id
             line = reader.readLine();
         }
         return classRooms;
@@ -356,12 +356,12 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
             Subject subject = null;
             for (Subject s : subjectList) {
                 if (s.getId().equals(tokens[0].substring(0, tokens[0].lastIndexOf("-")))) {
-                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms());
+                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms(), s.getExamTime(), s.getLessonTime());
                     break;
                 }
             }
             if (subject != null)
-                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject, new Grade(tokens[4], tokens[4])));
+                classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), subject, new Grade(tokens[4], tokens[6]),Integer.parseInt(tokens[5])));
             line = reader.readLine();
         }
         return classRooms;

@@ -282,7 +282,7 @@ public class GWO {
         String line = reader.readLine();
         while (line != null) {
             String[] tokens = line.split(",");
-            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3])));
+            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));
             line = reader.readLine();
         }
         return subjectList;
@@ -355,12 +355,17 @@ public class GWO {
         GWO gwo = new GWO(dates);
 
         byte[] bestSchedule=gwo.generateNewSchedule(1);
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         oos.writeObject(bestSchedule);
         byte[] buff = bos.toByteArray();
         oos.close();
-
+//        FileOutputStream fileOut = new FileOutputStream("data/result");
+//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//        objectOut.writeObject(bestSchedule);
+//        objectOut.close();
         ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
         ObjectInputStream ois = new ObjectInputStream(bis);
         Schedule readSchedule= (Schedule) ois.readObject();
@@ -371,11 +376,11 @@ public class GWO {
 //        Schedule readSchedule= (Schedule) objectInputStream.readObject();
 //        objectInputStream.close();
 
-        System.out.println("========schedule read from file");
-        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
-        for (int i = 0; i < dses1.size(); i++) {
-            System.out.println(dses1.get(i).toString());
-        }
+//        System.out.println("========schedule read from file");
+//        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
+//        for (int i = 0; i < dses1.size(); i++) {
+//            System.out.println(dses1.get(i).toString());
+//        }
         System.out.println("========schedule actual");
         List<DateSchedule> dses = readSchedule.getDateScheduleList();
 

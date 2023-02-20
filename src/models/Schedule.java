@@ -46,14 +46,14 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
             Subject subject = null;
             for (Subject s : subjectList) {
                 if (s.getId().equals(tokens[0].substring(0, tokens[0].lastIndexOf("-")))) {
-                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms());
+                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms(), s.getExamTime(), s.getLessonTime());
                     break;
                 }
             }
 
             if (subject != null) {
                 classRooms.add(new RegistrationClass(tokens[0], tokens[1], Integer.parseInt(tokens[2]),
-                        Integer.parseInt(tokens[3]), subject, new Grade(tokens[4], tokens[4])));
+                        Integer.parseInt(tokens[3]), subject, new Grade(tokens[4], tokens[6]),Integer.parseInt(tokens[5])));
                 int currentCap = check.get(subject.getId());
                 check.put(subject.getId(), currentCap + Integer.parseInt(tokens[3]));
             }
@@ -189,7 +189,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
         String line = reader.readLine();
         while (line != null) {
             String[] tokens = line.split(",");
-            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3])));
+            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));
             line = reader.readLine();
         }
         return subjectList;
