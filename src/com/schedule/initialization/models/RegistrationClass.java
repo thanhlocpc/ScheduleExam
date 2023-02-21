@@ -1,5 +1,6 @@
 package com.schedule.initialization.models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,12 +10,13 @@ import java.util.Objects;
  **/
 
 // LỚP ĐĂNG KÍ HỌC PHẦN
-public class RegistrationClass implements Cloneable{
+public class RegistrationClass implements Cloneable, Serializable {
     private String id;
     private String name;
     private Grade grade;
     private int estimatedClassSize; // sĩ số lớp dự kiến
     private int estimatedClassSizeReal; // sĩ số lớp thực tế
+    private int dbId;
     private List<Student> listStudent;
     public RegistrationClass clone() throws CloneNotSupportedException {
         RegistrationClass rc=(RegistrationClass) super.clone();
@@ -23,6 +25,7 @@ public class RegistrationClass implements Cloneable{
         rc.setGrade(this.grade.clone());
         rc.setEstimatedClassSize(this.estimatedClassSize);
         rc.setEstimatedClassSizeReal(this.estimatedClassSizeReal);
+        rc.setDbId(this.dbId);
         return rc;
     }
 
@@ -135,12 +138,21 @@ public class RegistrationClass implements Cloneable{
     private Subject subject;//môn học của học phần này
     private ClassRoom classRoom; // lớp này học phòng này
 
-    public RegistrationClass(String id, String name, int estimatedClassSize, int estimatedClassSizeReal, Subject subject, Grade grade) {
+    public RegistrationClass(String id, String name, int estimatedClassSize, int estimatedClassSizeReal, Subject subject, Grade grade,int dbId) {
         this.id = id;
         this.name = name;
         this.estimatedClassSize = estimatedClassSize;
         this.estimatedClassSizeReal = estimatedClassSizeReal;
         this.subject = subject;
         this.grade = grade;
+        this.dbId=dbId;
+    }
+
+    public int getDbId() {
+        return dbId;
+    }
+
+    public void setDbId(int dbId) {
+        this.dbId = dbId;
     }
 }

@@ -1,12 +1,14 @@
 package com.schedule.initialization.models;
 
+import java.io.Serializable;
+
 /**
  * @author : Thành Lộc
  * @since : 10/7/2022, Fri
  **/
 
 // HỌC KÌ
-public class Semester {
+public class Semester implements  Serializable {
     private String id;
     private String name;
 
