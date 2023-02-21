@@ -1,4 +1,4 @@
-package models;
+package com.schedule.initialization.models;
 
 import java.util.List;
 import java.util.Objects;

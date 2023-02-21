@@ -1,12 +1,11 @@
-package gwo;
+package com.schedule.initialization.gwo;
 
-import models.DateSchedule;
-import models.Schedule;
-import models.Subject;
+import com.schedule.initialization.models.DateSchedule;
+import com.schedule.initialization.models.Schedule;
+import com.schedule.initialization.models.Subject;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class GWO {
     public static final int N_WOLF = 100;
@@ -250,7 +249,7 @@ public class GWO {
         long beginTime = 0;
         long endTime = 0;
 
-//        Schedule[] schedules = gwo.createPopulation();
+//        Schedule[] schedules = com.schedule.initialization.gwo.createPopulation();
         beginTime = System.currentTimeMillis();
 
         gwo.gwo();

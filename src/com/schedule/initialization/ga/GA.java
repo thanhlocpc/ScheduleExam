@@ -1,8 +1,7 @@
-package ga;
+package com.schedule.initialization.ga;
 
-import models.DateSchedule;
-import models.Schedule;
-import models.Subject;
+import com.schedule.initialization.models.*;
+
 
 import java.io.IOException;
 import java.util.*;

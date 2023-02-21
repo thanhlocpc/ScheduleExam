@@ -1,4 +1,4 @@
-package enums;
+package com.schedule.initialization.enums;
 
 /**
  * @author : Thành Lộc

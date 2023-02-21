@@ -1,6 +1,6 @@
-package SA;
+package com.schedule.initialization.sa;
 
-import models.Schedule;
+import com.schedule.initialization.models.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
