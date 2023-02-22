@@ -12,13 +12,13 @@ Lịch thi theo ngày
  */
 public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Serializable {
     private String date;//ngày
+    List<SubjectSchedule> subjectSchedules;//danh sách các môn thi được sắp xếp trong ngày
 
     public String getDate() {
         return date;
     }
 
 
-    List<SubjectSchedule> subjectSchedules;//danh sách các môn thi được sắp xếp trong ngày
     List<String[]> usedList;//danh sách phòng và ca thi đã được sử dụng trong ngày. Mảng gồm 2 phần tử :shift,id classroomLT
     List<String[]> usedListTH;
     List<String[]> usedListLT;

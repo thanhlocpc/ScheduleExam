@@ -10,7 +10,7 @@ import java.util.*;
 
 public class GWO {
     public static final int N_WOLF = 50;
-    public static final int N_ITER = 100;
+    public static final int N_ITER = 200;
     public List<String> dates;
     public Schedule finalSchedule;
     public GWO(){
