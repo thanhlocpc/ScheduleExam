@@ -49,7 +49,7 @@ public class GA {
                     mutate(child);
 
                 if (child.fitness < 4000) {
-                    System.out.println("iter: " + iter);
+//                    System.out.println("iter: " + iter);
                     return child;
                 }
                 newSchedule.add(child);
@@ -154,20 +154,21 @@ public class GA {
         dates.add("2022-10-20");
         long beginTime = 0;
         long endTime = 0;
-        for (int i = 0; i < 10; i++) {
-            System.out.println("==========begin " + i + " ==============");
+        for (int i = 0; i < 5; i++) {
+//            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
-            System.out.println("schedule " + i + ":");
+//            System.out.println("schedule " + i + ":");
             GA ga = new GA(dates);
             Schedule result = ga.ga();
-            System.out.println(result.fitness);
-            System.out.println("is accepted:" + result.isAccepted());
-            result.getDateScheduleList().forEach(item -> {
-                System.out.println(item);
-            });
+//            System.out.println(result.fitness);
+//            System.out.println("is accepted:" + result.isAccepted());
+//            result.getDateScheduleList().forEach(item -> {
+//                System.out.println(item);
+//            });
             endTime = System.currentTimeMillis();
-            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
-            System.out.println("==========end==============");
+            System.out.println(i+","+((endTime-beginTime)/1000)+","+result.fitness);
+//            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
+//            System.out.println("==========end==============");
         }
     }
 }
