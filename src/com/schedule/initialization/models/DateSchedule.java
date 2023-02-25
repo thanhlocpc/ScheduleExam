@@ -1,5 +1,7 @@
 package com.schedule.initialization.models;
 
+import com.schedule.initialization.utils.ExcelFile;
+
 import java.io.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,13 +14,13 @@ Lịch thi theo ngày
  */
 public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Serializable {
     private String date;//ngày
+    List<SubjectSchedule> subjectSchedules;//danh sách các môn thi được sắp xếp trong ngày
 
     public String getDate() {
         return date;
     }
 
 
-    List<SubjectSchedule> subjectSchedules;//danh sách các môn thi được sắp xếp trong ngày
     List<String[]> usedList;//danh sách phòng và ca thi đã được sử dụng trong ngày. Mảng gồm 2 phần tử :shift,id classroomLT
     List<String[]> usedListTH;
     List<String[]> usedListLT;
@@ -298,8 +300,8 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
     }
 
     public void initiateClassMap() throws IOException {
-        List<ClassRoom> totalClassRoomTHList = this.getClassRoomTHList();
-        List<ClassRoom> totalClassRoomLTList = this.getClassRoomLTList();
+        List<ClassRoom> totalClassRoomTHList = ExcelFile.getClassroomsTH();
+        List<ClassRoom> totalClassRoomLTList = ExcelFile.getClassroomsLT();
         for (int i = 0; i < 4; i++) {
             for (ClassRoom c : totalClassRoomLTList) {
                 this.ltClassMap.put(c.getName() + "-" + i, null);
@@ -462,14 +464,14 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
     }
 
     public List<Subject> generateSchedule() throws IOException {
-        remainClassRoomTHList = this.getClassRoomTHList();
+        remainClassRoomTHList = ExcelFile.getClassroomsTH();
 //        System.out.println("Số lượng phòng thi thực hành:" + remainClassRoomTHList.size());
-        remainClassRoomLTList = this.getClassRoomLTList();
+        remainClassRoomLTList = ExcelFile.getClassroomsLT();
 //        System.out.println("Số lương phòng thi lý thuyết:" + remainClassRoomLTList.size());
         Random rd = new Random();
-        List<ClassRoom> totalClassRoomTHList = this.getClassRoomTHList();
-        List<ClassRoom> totalClassRoomLTList = this.getClassRoomLTList();
-        registrationClasses = getRegistrationClass();
+        List<ClassRoom> totalClassRoomTHList =ExcelFile.getClassroomsTH();
+        List<ClassRoom> totalClassRoomLTList =ExcelFile.getClassroomsLT();
+        registrationClasses = ExcelFile.getRegistrationClass(subjectList);
         subjectLoop:
         for (int si = 0; si < preparedSubject.size(); si++) {
             Subject s = preparedSubject.get(si);

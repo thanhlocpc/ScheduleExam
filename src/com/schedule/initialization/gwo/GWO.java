@@ -4,6 +4,7 @@ import com.schedule.initialization.models.ChangeScheduleRequest;
 import com.schedule.initialization.models.DateSchedule;
 import com.schedule.initialization.models.Schedule;
 import com.schedule.initialization.models.Subject;
+import com.schedule.initialization.utils.ExcelFile;
 
 import java.io.*;
 import java.util.*;
@@ -195,11 +196,11 @@ public class GWO {
 //        System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
         this.finalSchedule = bestSchedultBeforeChange.clone();
         finalSchedule.fitness();
-//        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
-//        for (int i = 0; i < dses.size(); i++) {
-//            System.out.println(dses.get(i).toString());
-//
-//        }
+        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
+        for (int i = 0; i < dses.size(); i++) {
+            System.out.println(dses.get(i).toString());
+
+        }
 
 //        System.out.println("best schedule fitness with change date schedule:" + bestSche.fitness);
 //        System.out.println("is accepted:" + bestSche.isAccepted());
@@ -341,19 +342,10 @@ public class GWO {
         return isChange? buff:null;
     }
     public static void main(String[] args) throws IOException, CloneNotSupportedException, InterruptedException, ClassNotFoundException {
-        List<String> dates = new ArrayList<>();
-        dates.add("2022-10-12");
-        dates.add("2022-10-13");
-        dates.add("2022-10-14");
-        dates.add("2022-10-15");
-        dates.add("2022-10-16");
-        dates.add("2022-10-17");
-        dates.add("2022-10-18");
-        dates.add("2022-10-19");
-        dates.add("2022-10-20");
+        List<String> dates = ExcelFile.getDates();
         long beginTime = 0;
         long endTime = 0;
-        for(int i=0;i<5;i++){
+        for(int i=0;i<1;i++){
 
             beginTime = System.currentTimeMillis();
             GWO gwo = new GWO(dates);

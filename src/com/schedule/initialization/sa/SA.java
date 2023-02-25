@@ -1,5 +1,6 @@
 package com.schedule.initialization.sa;
 
+import com.schedule.initialization.ga.GA;
 import com.schedule.initialization.models.*;
 
 import java.io.IOException;
@@ -25,10 +26,12 @@ public class SA {
     }
 
     public Schedule sa() throws IOException, CloneNotSupportedException {
-        int T = 10000;
+        int T = 2000;
         Schedule current = createRandomSchedule();
         Schedule next = null;
-        while (current.fitness > 5000) {
+        while (current.fitness > 200) {
+            if(T==0)
+                break;
             next = createRandomSchedule();
             double delta = next.fitness - current.fitness;
             if (delta < 0) {
@@ -38,7 +41,7 @@ public class SA {
             }
             T--;
         }
-        System.out.println("T:" + T);
+//        System.out.println("T:" + T);
         return current;
     }
 
@@ -55,19 +58,21 @@ public class SA {
         dates.add("2022-10-20");
         long beginTime = 0;
         long endTime = 0;
-        for (int i = 0; i < 10; i++) {
-            System.out.println("==========begin "+ i+" ==============");
+        for (int i = 0; i < 30; i++) {
+//            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
-            System.out.println("schedule " + i + ":");
+//            System.out.println("schedule " + i + ":");
             SA sa = new SA(dates);
             Schedule result = sa.sa();
-            System.out.println(result.fitness);
-            result.getDateScheduleList().forEach(item -> {
-                System.out.println(item);
-            });
+//            System.out.println(result.fitness);
+//            System.out.println("is accepted:" + result.isAccepted());
+//            result.getDateScheduleList().forEach(item -> {
+//                System.out.println(item);
+//            });
             endTime = System.currentTimeMillis();
-            System.out.println("iter "+i+":"+(endTime-beginTime)/60000);
-            System.out.println("==========end==============");
+            System.out.println(i+","+((endTime-beginTime)/1000)+","+result.fitness);
+//            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
+//            System.out.println("==========end==============");
         }
     }
 }

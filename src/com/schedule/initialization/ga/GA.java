@@ -48,7 +48,7 @@ public class GA {
                 if (rd.nextInt(100) <= 0.3)
                     mutate(child);
 
-                if (child.fitness < 4000) {
+                if (child.fitness < 200) {
 //                    System.out.println("iter: " + iter);
                     return child;
                 }
@@ -154,7 +154,7 @@ public class GA {
         dates.add("2022-10-20");
         long beginTime = 0;
         long endTime = 0;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
 //            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
 //            System.out.println("schedule " + i + ":");
