@@ -1,5 +1,6 @@
 package com.schedule.initialization.models;
 
+import com.schedule.initialization.gwo.GWO;
 import com.schedule.initialization.utils.ExcelFile;
 
 import java.io.*;
@@ -300,8 +301,14 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
     }
 
     public void initiateClassMap() throws IOException {
-        List<ClassRoom> totalClassRoomTHList = ExcelFile.getClassroomsTH();
-        List<ClassRoom> totalClassRoomLTList = ExcelFile.getClassroomsLT();
+        List<ClassRoom> totalClassRoomTHList = new ArrayList<>();
+        List<ClassRoom> totalClassRoomLTList = new ArrayList<>();
+        GWO.classroomsTHs.forEach(item->{
+            totalClassRoomTHList.add(item.clone());
+        });
+        GWO.classroomsLTs.forEach(item->{
+            totalClassRoomLTList.add(item.clone());
+        });
         for (int i = 0; i < 4; i++) {
             for (ClassRoom c : totalClassRoomLTList) {
                 this.ltClassMap.put(c.getName() + "-" + i, null);
@@ -464,14 +471,30 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
     }
 
     public List<Subject> generateSchedule() throws IOException {
-        remainClassRoomTHList = ExcelFile.getClassroomsTH();
+        remainClassRoomTHList =new ArrayList<>();
 //        System.out.println("Số lượng phòng thi thực hành:" + remainClassRoomTHList.size());
-        remainClassRoomLTList = ExcelFile.getClassroomsLT();
+        remainClassRoomLTList = new ArrayList<>();
 //        System.out.println("Số lương phòng thi lý thuyết:" + remainClassRoomLTList.size());
         Random rd = new Random();
-        List<ClassRoom> totalClassRoomTHList =ExcelFile.getClassroomsTH();
-        List<ClassRoom> totalClassRoomLTList =ExcelFile.getClassroomsLT();
-        registrationClasses = ExcelFile.getRegistrationClass(subjectList);
+        List<ClassRoom> totalClassRoomTHList = new ArrayList<>();
+        List<ClassRoom> totalClassRoomLTList = new ArrayList<>();
+        GWO.classroomsTHs.forEach(item->{
+            totalClassRoomTHList.add(item.clone());
+            remainClassRoomTHList.add(item.clone());
+
+        });
+        GWO.classroomsLTs.forEach(item->{
+            totalClassRoomLTList.add(item.clone());
+            remainClassRoomLTList.add(item.clone());
+        });
+        registrationClasses =new ArrayList<>();
+        GWO.registrationClasses.forEach(item->{
+            try {
+                registrationClasses.add(item.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        });
         subjectLoop:
         for (int si = 0; si < preparedSubject.size(); si++) {
             Subject s = preparedSubject.get(si);

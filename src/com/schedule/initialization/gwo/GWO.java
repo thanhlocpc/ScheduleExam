@@ -1,9 +1,6 @@
 package com.schedule.initialization.gwo;
 
-import com.schedule.initialization.models.ChangeScheduleRequest;
-import com.schedule.initialization.models.DateSchedule;
-import com.schedule.initialization.models.Schedule;
-import com.schedule.initialization.models.Subject;
+import com.schedule.initialization.models.*;
 import com.schedule.initialization.utils.ExcelFile;
 
 import java.io.*;
@@ -12,6 +9,10 @@ import java.util.*;
 public class GWO {
     public static final int N_WOLF = 100;
     public static final int N_ITER = 500;
+    public static List<ClassRoom> classroomsLTs;
+    public static List<ClassRoom> classroomsTHs;
+    public static List<Subject> subjectList;
+    public static List<RegistrationClass> registrationClasses;
     public List<String> dates;
     public Schedule finalSchedule;
     public GWO(){
@@ -19,6 +20,10 @@ public class GWO {
     };
     public GWO(List<String> dates) {
         this.dates = dates;
+        classroomsLTs=ExcelFile.getClassroomsLT();
+        classroomsTHs=ExcelFile.getClassroomsTH();
+        subjectList=ExcelFile.getSubjects();
+        registrationClasses=ExcelFile.getRegistrationClass(subjectList);
     }
 
     public Schedule[] createPopulation() throws IOException {

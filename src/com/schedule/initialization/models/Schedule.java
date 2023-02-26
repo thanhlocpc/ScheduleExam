@@ -1,5 +1,6 @@
 package com.schedule.initialization.models;
 
+import com.schedule.initialization.gwo.GWO;
 import com.schedule.initialization.utils.ExcelFile;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -29,7 +30,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
 
     public Schedule(List<String> dates) throws IOException {
 
-        this.subjectList = ExcelFile.getSubjects();
+        this.subjectList = GWO.subjectList;
         subjectMap = new HashMap<>();
         for (Subject s : subjectList) {
             subjectMap.put(s, new HashSet<>());
@@ -47,34 +48,22 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
         }
         //list registration class
         List<RegistrationClass> classRooms = new ArrayList<>();
+        GWO.registrationClasses.forEach(item->{
+            try {
+                classRooms.add(item.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        });
 //        BufferedReader reader = new BufferedReader(new FileReader("data/RegistrationClass"));
 //        String line = reader.readLine();
 
-        XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream("data/data.xlsx"));
-        XSSFSheet sheet = wb.getSheetAt(2);
-        Iterator<Row> itr = sheet.iterator();
-        itr.next();
-        while (itr.hasNext()){
-            Row row = itr.next();
-            Subject subject = null;
-            for (Subject s : subjectList) {
-                String ssName=row.getCell(0).getStringCellValue();
-                if (s.getId().equals(ssName.substring(0, ssName.lastIndexOf("-")))) {
-                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms(), s.getExamTime(), s.getLessonTime());
-                    break;
-                }
-            }
-            if (subject != null)
-                classRooms.add(new RegistrationClass(row.getCell(0).getStringCellValue(),
-                        row.getCell(1).getStringCellValue(),
-                        (int)row.getCell(2).getNumericCellValue(),
-                        (int)row.getCell(3).getNumericCellValue(),
-                        subject,
-                        new Grade(row.getCell(4).getStringCellValue(), (int)row.getCell(6).getNumericCellValue()+""),
-                        (int)row.getCell(5).getNumericCellValue()));
-            int currentCap = check.get(subject.getId());
-            check.put(subject.getId(), currentCap + (int)row.getCell(3).getNumericCellValue());
-        }
+        classRooms.forEach(item->{
+            int currentCap = check.get(item.getSubject().getId());
+            check.put(item.getSubject().getId(), currentCap + item.getEstimatedClassSizeReal());
+        });
+
+
 
 //        while (line != null) {
 //            String[] tokens = line.split(",");
