@@ -35,7 +35,7 @@ public class ExcelFile {
         try {
             wb = new XSSFWorkbook(fis);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
