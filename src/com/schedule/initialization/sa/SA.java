@@ -5,20 +5,22 @@ import com.schedule.initialization.models.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SA {
     public List<String> dates;
     public Schedule finalSchedule;
-
-    public SA(List<String> dates) {
+    public List<Integer> scList;
+    public SA(List<String> dates,List<Integer> scList) {
         this.dates = dates;
+        this.scList=scList;
     }
 
     public Schedule createRandomSchedule() throws IOException {
         Schedule result = null;
         while (true) {
-            result = new Schedule(dates);
+            result = new Schedule(dates,scList);
             if (result.isAccepted())
                 break;
         }
@@ -58,11 +60,12 @@ public class SA {
         dates.add("2022-10-20");
         long beginTime = 0;
         long endTime = 0;
+        List properties= Arrays.asList(10,10,10,10,10,10);
         for (int i = 0; i < 30; i++) {
 //            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
 //            System.out.println("schedule " + i + ":");
-            SA sa = new SA(dates);
+            SA sa = new SA(dates,properties);
             Schedule result = sa.sa();
 //            System.out.println(result.fitness);
 //            System.out.println("is accepted:" + result.isAccepted());

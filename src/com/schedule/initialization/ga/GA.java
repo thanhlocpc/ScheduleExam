@@ -12,21 +12,22 @@ import java.util.*;
  * @created 2/6/2023
  */
 public class GA {
-    public static final int POP_SIZE = 100;
-    public static final int N_ITER = 500;
+    public static final int POP_SIZE = 500;
+    public static final int N_ITER = 1000;
     public List<String> dates;
     List<Schedule> schedules = new ArrayList<>();
     Random rd = new Random();
-
-    public GA(List<String> dates) {
+    public List<Integer> scList;
+    public GA(List<String> dates,List<Integer> scList) {
         this.dates = dates;
+        this.scList=scList;
     }
 
     public List<Schedule> createPopulation() throws IOException {
         Schedule temp;
         for (int i = 0; i < POP_SIZE; i++) {
             while (true) {
-                temp = new Schedule(dates);
+                temp = new Schedule(dates,scList);
                 if (temp.isAccepted()) {
                     schedules.add(temp);
                     break;
@@ -154,11 +155,12 @@ public class GA {
         dates.add("2022-10-20");
         long beginTime = 0;
         long endTime = 0;
-        for (int i = 0; i < 10; i++) {
+        List properties= Arrays.asList(10,10,10,10,10,10);
+        for (int i = 0; i < 30; i++) {
 //            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
 //            System.out.println("schedule " + i + ":");
-            GA ga = new GA(dates);
+            GA ga = new GA(dates,properties);
             Schedule result = ga.ga();
 //            System.out.println(result.fitness);
 //            System.out.println("is accepted:" + result.isAccepted());

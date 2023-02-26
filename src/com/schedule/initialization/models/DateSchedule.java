@@ -1,5 +1,6 @@
 package com.schedule.initialization.models;
 
+import com.schedule.initialization.data.InitData;
 import com.schedule.initialization.gwo.GWO;
 import com.schedule.initialization.utils.ExcelFile;
 
@@ -303,10 +304,10 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
     public void initiateClassMap() throws IOException {
         List<ClassRoom> totalClassRoomTHList = new ArrayList<>();
         List<ClassRoom> totalClassRoomLTList = new ArrayList<>();
-        GWO.classroomsTHs.forEach(item->{
+        InitData.classRoomsTH.forEach(item->{
             totalClassRoomTHList.add(item.clone());
         });
-        GWO.classroomsLTs.forEach(item->{
+        InitData.classRoomsLT.forEach(item->{
             totalClassRoomLTList.add(item.clone());
         });
         for (int i = 0; i < 4; i++) {
@@ -478,17 +479,17 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
         Random rd = new Random();
         List<ClassRoom> totalClassRoomTHList = new ArrayList<>();
         List<ClassRoom> totalClassRoomLTList = new ArrayList<>();
-        GWO.classroomsTHs.forEach(item->{
+        InitData.classRoomsTH.forEach(item->{
             totalClassRoomTHList.add(item.clone());
             remainClassRoomTHList.add(item.clone());
 
         });
-        GWO.classroomsLTs.forEach(item->{
+        InitData.classRoomsLT.forEach(item->{
             totalClassRoomLTList.add(item.clone());
             remainClassRoomLTList.add(item.clone());
         });
         registrationClasses =new ArrayList<>();
-        GWO.registrationClasses.forEach(item->{
+        InitData.registrationClasses.forEach(item->{
             try {
                 registrationClasses.add(item.clone());
             } catch (CloneNotSupportedException e) {

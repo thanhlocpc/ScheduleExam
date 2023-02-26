@@ -1,5 +1,6 @@
 package com.schedule.initialization.models;
 
+import com.schedule.initialization.data.InitData;
 import com.schedule.initialization.gwo.GWO;
 import com.schedule.initialization.utils.ExcelFile;
 import org.apache.poi.ss.usermodel.Row;
@@ -28,14 +29,24 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
     Map<Subject, Set<String>> subjectMap;
     List<SubjectSchedule> totalSubjectSchedule;
 
-    public Schedule(List<String> dates) throws IOException {
+    public List<Integer> getScList() {
+        return scList;
+    }
 
-        this.subjectList = GWO.subjectList;
+    public void setScList(List<Integer> scList) {
+        this.scList = scList;
+    }
+
+    List<Integer> scList;
+    public Schedule(List<String> dates , List<Integer> scList) throws IOException {
+
+        this.subjectList = InitData.subjects;
         subjectMap = new HashMap<>();
         for (Subject s : subjectList) {
             subjectMap.put(s, new HashSet<>());
         }
         generateSchedule(dates);
+        this.scList=scList;
         fitness();
     }
 
@@ -48,7 +59,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
         }
         //list registration class
         List<RegistrationClass> classRooms = new ArrayList<>();
-        GWO.registrationClasses.forEach(item->{
+        InitData.registrationClasses.forEach(item->{
             try {
                 classRooms.add(item.clone());
             } catch (CloneNotSupportedException e) {
@@ -147,6 +158,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
             subjectMapClone.put(entry.getKey().clone(),new HashSet<>(entry.getValue()));
         }
         cloneSchedule.setSubjectMap(subjectMapClone);
+        cloneSchedule.scList=new ArrayList<>(scList);
         cloneSchedule.fitness();
         return cloneSchedule;
     }
@@ -270,7 +282,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                 }
             }
             if (isDESC) h1 = 0;
-            result += h1 * 10;
+            result += h1 * scList.get(0);
 
 
             // một ngày 1 khối lớp không nên cho thi nhiều môn, tối đa 2 môn
@@ -296,7 +308,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                     h2++;
                 }
             }
-            result += h2 * 10;
+            result += h2 * scList.get(1);
 
 
             // 1 môn thi không nên chia quá ít phòng thi trong 1 ca thi
@@ -340,7 +352,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                     }
                 }
             }
-            result += h3 * 10;
+            result += h3 * scList.get(2);
 
 
             //Một ca thi hạn chế xếp nhiều hơn 2 môn học tránh bị trùng lặp lịch thi của sinh viên
@@ -365,7 +377,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                     h4++;
                 }
             }
-            result += h4 * 10;
+            result += h4 * scList.get(3);
 
 
             // Một phòng thi sau khi sắp xếp phải có sv tham dự lớn hơn 50% sức chứa của phòng thi đó
@@ -377,7 +389,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                     h5.getAndIncrement();
                 }
             });
-            result += h5.get() * 10;
+            result += h5.get() * scList.get(4);
 //            String ff="";
 
 
@@ -401,7 +413,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                    h6++;
                }
             }
-            result += h6 * 10;
+            result += h6 * scList.get(5);
         }
 
         this.fitness = result;
