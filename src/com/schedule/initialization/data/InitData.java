@@ -21,10 +21,15 @@ public class InitData {
 
     static {
         // init data
+        initData();
+    }
+
+
+    public static void initData(){
         classRoomsLT = ExcelFile.getClassroomsLT();
         classRoomsTH = ExcelFile.getClassroomsTH();
         subjects = ExcelFile.getSubjects();
-        registrationClasses = ExcelFile.getRegistrationClass(subjects);
+        registrationClasses = ExcelFile.getRegistrationClass(InitData.subjects);
         examDates = ExcelFile.getDates();
     }
 

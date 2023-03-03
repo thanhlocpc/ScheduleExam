@@ -1,4 +1,5 @@
 package com.schedule.initialization.utils;
+import com.schedule.initialization.data.InitData;
 import com.schedule.initialization.models.ClassRoom;
 import com.schedule.initialization.models.Grade;
 import com.schedule.initialization.models.RegistrationClass;
@@ -130,6 +131,11 @@ public class ExcelFile {
         }
         return registrationClasses;
     }
+
+    public static void setWb(Workbook workbook){
+        wb = workbook;
+    }
+
     public static void main(String[] args) {
 //        List<String> dates=ExcelFile.getDates();
 //        dates.forEach(System.out::println);
