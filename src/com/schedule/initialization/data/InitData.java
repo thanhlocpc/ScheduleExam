@@ -21,11 +21,7 @@ public class InitData {
 
     static {
         // init data
-        classRoomsLT = ExcelFile.getClassroomsLT();
-        classRoomsTH = ExcelFile.getClassroomsTH();
-        subjects = ExcelFile.getSubjects();
-        registrationClasses = ExcelFile.getRegistrationClass(subjects);
-        examDates = ExcelFile.getDates();
+        initData();
     }
 
 
