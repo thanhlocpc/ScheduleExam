@@ -28,4 +28,13 @@ public class InitData {
         examDates = ExcelFile.getDates();
     }
 
+
+    public static void initData(){
+        classRoomsLT = ExcelFile.getClassroomsLT();
+        classRoomsTH = ExcelFile.getClassroomsTH();
+        subjects = ExcelFile.getSubjects();
+        registrationClasses = ExcelFile.getRegistrationClass(InitData.subjects);
+        examDates = ExcelFile.getDates();
+    }
+
 }
