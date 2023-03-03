@@ -29,13 +29,13 @@ public class ExcelFile {
         }
     }
 
-    static XSSFWorkbook wb;
+    public static Workbook wb;
 
     static {
         try {
             wb = new XSSFWorkbook(fis);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -43,7 +43,7 @@ public class ExcelFile {
     }
     public static List<String> getDates(){
         List<String>date=new ArrayList<>();
-        XSSFSheet sheet = wb.getSheetAt(4);
+        Sheet sheet = wb.getSheetAt(4);
         Iterator<Row> itr = sheet.iterator();
         itr.next();
         while (itr.hasNext()){
@@ -54,7 +54,7 @@ public class ExcelFile {
     }
     public static List<ClassRoom> getClassroomsTH(){
         List<ClassRoom> classRooms=new ArrayList<>();
-        XSSFSheet sheet = wb.getSheetAt(1);
+        Sheet sheet = wb.getSheetAt(1);
         Iterator<Row> itr = sheet.iterator();
         itr.next();
         while (itr.hasNext()){
@@ -72,7 +72,7 @@ public class ExcelFile {
 
     public static List<ClassRoom> getClassroomsLT(){
         List<ClassRoom> classRooms=new ArrayList<>();
-        XSSFSheet sheet = wb.getSheetAt(0);
+        Sheet sheet = wb.getSheetAt(0);
         Iterator<Row> itr = sheet.iterator();
         itr.next();
         while (itr.hasNext()){
@@ -88,7 +88,7 @@ public class ExcelFile {
     }
     public static List<Subject> getSubjects(){
         List<Subject> subjects=new ArrayList<>();
-        XSSFSheet sheet = wb.getSheetAt(3);
+        Sheet sheet = wb.getSheetAt(3);
         Iterator<Row> itr = sheet.iterator();
         itr.next();
         while (itr.hasNext()){
@@ -105,7 +105,7 @@ public class ExcelFile {
 
     public static List<RegistrationClass> getRegistrationClass(List<Subject> subjectList){
         List<RegistrationClass> registrationClasses=new ArrayList<>();
-        XSSFSheet sheet = wb.getSheetAt(2);
+        Sheet sheet = wb.getSheetAt(2);
         Iterator<Row> itr = sheet.iterator();
         itr.next();
         while (itr.hasNext()){

@@ -12,7 +12,7 @@ import java.util.*;
  * @created 2/6/2023
  */
 public class GA {
-    public static final int POP_SIZE = 500;
+    public static final int POP_SIZE = 100;
     public static final int N_ITER = 1000;
     public List<String> dates;
     List<Schedule> schedules = new ArrayList<>();

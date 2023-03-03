@@ -28,7 +28,7 @@ public class SA {
     }
 
     public Schedule sa() throws IOException, CloneNotSupportedException {
-        int T = 2000;
+        int T = 10000;
         Schedule current = createRandomSchedule();
         Schedule next = null;
         while (current.fitness > 200) {
