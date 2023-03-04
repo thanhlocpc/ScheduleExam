@@ -24,6 +24,7 @@ public class GWO {
     };
     public GWO(List<String> dates,List<Integer> properties) {
         this.dates = dates;
+        Collections.shuffle(this.dates);
         this.nWolf=properties.get(0);
         this.nIter=properties.get(1);
         this.scList=properties.subList(2,properties.size());
@@ -218,15 +219,15 @@ public class GWO {
 
 //        System.out.println("begin alpha fitness:" + beginAlphaFitness);
 //        System.out.println("best iter:" + bestIter);
-//        System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
+        System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
 //        System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
         this.finalSchedule = bestSchedultBeforeChange.clone();
         finalSchedule.fitness();
-//        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
-//        for (int i = 0; i < dses.size(); i++) {
-//            System.out.println(dses.get(i).toString());
-//
-//        }
+        List<DateSchedule> dses = bestSchedultBeforeChange.getDateScheduleList();
+        for (int i = 0; i < dses.size(); i++) {
+            System.out.println(dses.get(i).toString());
+
+        }
 
 //        System.out.println("best schedule fitness with change date schedule:" + bestSche.fitness);
 //        System.out.println("is accepted:" + bestSche.isAccepted());
@@ -374,7 +375,7 @@ public class GWO {
         long endTime = 0;
         List properties=Arrays.asList(100,1000,10,10,10,10,10,10);
 //        GWO gwo = new GWO(dates,properties);
-        for(int i=0;i<30;i++){
+        for(int i=0;i<3;i++){
 
             beginTime = System.currentTimeMillis();
             GWO gwo = new GWO(dates,properties);

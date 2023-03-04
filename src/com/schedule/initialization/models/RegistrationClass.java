@@ -49,6 +49,7 @@ public class RegistrationClass implements Cloneable, Serializable {
                 ", name='" + name + '\'' +
                 ", estimatedClassSize=" + estimatedClassSize +
                 ", estimatedClassSizeReal=" + estimatedClassSizeReal +
+                ", subjectId=" + subject.getId() +
                 '}';
     }
 

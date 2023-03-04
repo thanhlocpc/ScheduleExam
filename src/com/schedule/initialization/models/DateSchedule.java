@@ -775,7 +775,7 @@ public class DateSchedule implements Comparable<DateSchedule>,Cloneable, Seriali
 
     public List<Subject> generateInitialSubjectSchedule() throws IOException {
         Random rd = new Random();
-        int numSubject = subjectList.size() < 4 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.4)) + 2;
+        int numSubject = subjectList.size() < 2 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.3)+1)+1 ;
 
         for (int i = 0; i < numSubject; i++) {
             int randomIndex = rd.nextInt(remainSubject.size());

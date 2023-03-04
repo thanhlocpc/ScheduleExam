@@ -33,4 +33,8 @@ public class InitData {
         examDates = ExcelFile.getDates();
     }
 
+    public static void main(String[] args) {
+        subjects.forEach(System.out::println);
+        registrationClasses.forEach(System.out::println);
+    }
 }

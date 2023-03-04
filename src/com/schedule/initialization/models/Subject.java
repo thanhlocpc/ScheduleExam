@@ -76,7 +76,7 @@ public class Subject implements  Serializable {
     }
     @Override
     public int hashCode() {
-        return Integer.parseInt(this.id);
+        return this.id.hashCode();
     }
 
     public String getId() {
