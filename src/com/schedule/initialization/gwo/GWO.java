@@ -13,8 +13,8 @@ import java.io.*;
 import java.util.*;
 
 public class GWO {
-    public   int nWolf;
-    public   int nIter;
+    public int nWolf;
+    public int nIter;
     public List<String> dates;
     public Schedule finalSchedule;
     public List<Integer> scList=new ArrayList<>();
@@ -31,7 +31,6 @@ public class GWO {
     }
 
     public Workbook getData() {
-
         return data;
     }
 
