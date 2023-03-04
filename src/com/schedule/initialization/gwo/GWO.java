@@ -320,6 +320,38 @@ public class GWO {
         ois.close();
         return readSchedule;
     }
+
+    public  byte[] changeSubjectSchedule(List<ChangeSubjectScheduleRequest> changeSubjectScheduleRequestList, Schedule schedule) throws IOException {
+        List<DateSchedule> dateSchedules=schedule.getDateScheduleList();
+        boolean isChange=false;
+        for (ChangeSubjectScheduleRequest cssr:changeSubjectScheduleRequestList){
+           DateSchedule ds =dateSchedules.stream().filter(item -> item.getDate().equals(cssr.getOldDate())).findFirst().get();
+           for(int i=0;i<ds.getSubjectSchedules().size();i++){
+               SubjectSchedule ss=ds.getSubjectSchedules().get(i);
+               if(ss.getRoom().getRegistrationClass().getId().equals(cssr.getCourseName())
+                       && ss.getRoom().getIndex()==cssr.getSubjectScheduleIndex()){
+                   isChange=true;
+                   ss.setShift(cssr.getShift());
+                   ds.getSubjectSchedules().remove(i);
+                   dateSchedules.forEach(item->{
+                       if(item.getDate().equals(cssr.getDate())){
+                           item.getSubjectSchedules().add(ss);
+                       }
+                   });
+               }
+           }
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(schedule);
+        byte[] buff = bos.toByteArray();
+//        FileOutputStream fileOut = new FileOutputStream(sourceChangeFolder+"/result");
+//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//        objectOut.writeObject(bestChange);
+//        objectOut.close();
+        return isChange? buff:null;
+    }
+
     public  byte[] changeSchedule(List<ChangeScheduleRequest> changeScheduleRequestList, Schedule schedule) throws IOException, CloneNotSupportedException {
         List<Subject> subjectList = getSubjectList();
         Map<Subject, Set<String>> map = new HashMap<>();
@@ -372,16 +404,16 @@ public class GWO {
         List<String> dates = ExcelFile.getDates();
         long beginTime = 0;
         long endTime = 0;
-        List properties=Arrays.asList(100,1000,10,10,10,10,10,10);
-//        GWO gwo = new GWO(dates,properties);
-        for(int i=0;i<3;i++){
-
-            beginTime = System.currentTimeMillis();
-            GWO gwo = new GWO(dates,properties);
-            gwo.gwo();
-            endTime = System.currentTimeMillis();
-            System.out.println(i+","+((endTime-beginTime)/1000)+","+gwo.finalSchedule.fitness);
-        }
+        List properties=Arrays.asList(100,200,10,10,10,10,10,10);
+        GWO gwo = new GWO(dates,properties);
+//        for(int i=0;i<3;i++){
+//
+//            beginTime = System.currentTimeMillis();
+//            GWO gwo = new GWO(dates,properties);
+//            gwo.gwo();
+//            endTime = System.currentTimeMillis();
+//            System.out.println(i+","+((endTime-beginTime)/1000)+","+gwo.finalSchedule.fitness);
+//        }
 
 //        byte[] bestSchedule=gwo.generateNewSchedule(1);
 ////
@@ -391,25 +423,45 @@ public class GWO {
 //        oos.writeObject(bestSchedule);
 //        byte[] buff = bos.toByteArray();
 //        oos.close();
+
 //        FileOutputStream fileOut = new FileOutputStream("data/result");
 //        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-//        objectOut.writeObject(bestSchedule);
+//        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
+//        ObjectInputStream ois = new ObjectInputStream(bis);
+//        Schedule readSchedule1= (Schedule) ois.readObject();
+//        objectOut.writeObject(readSchedule1);
 //        objectOut.close();
+
 //        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
 //        ObjectInputStream ois = new ObjectInputStream(bis);
 //        Schedule readSchedule= (Schedule) ois.readObject();
 //        ois.close();
 
-//        FileInputStream fileInt=new FileInputStream("data/result");
-//        ObjectInputStream objectInputStream=new ObjectInputStream(fileInt);
-//        Schedule readSchedule= (Schedule) objectInputStream.readObject();
-//        objectInputStream.close();
+        FileInputStream fileInt=new FileInputStream("data/result");
+        ObjectInputStream objectInputStream=new ObjectInputStream(fileInt);
+        Schedule readSchedule= (Schedule) objectInputStream.readObject();
+        objectInputStream.close();
 
 //        System.out.println("========schedule read from file");
-//        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
-//        for (int i = 0; i < dses1.size(); i++) {
-//            System.out.println(dses1.get(i).toString());
-//        }
+        List<DateSchedule> dses1 = readSchedule.getDateScheduleList();
+        for (int i = 0; i < dses1.size(); i++) {
+            System.out.println(dses1.get(i).toString());
+        }
+
+        List<ChangeSubjectScheduleRequest> cssr=new ArrayList<>();
+        cssr.add(new ChangeSubjectScheduleRequest("214353-01","2022-10-12","2022-10-13",1,0));
+//        cssr.add(new ChangeSubjectScheduleRequest());
+        byte[] scheduleAfterChangeByteArray = gwo.changeSubjectSchedule(cssr, readSchedule);
+        ByteArrayInputStream biss=new ByteArrayInputStream(scheduleAfterChangeByteArray);
+        ObjectInputStream oiss = new ObjectInputStream(biss);
+        Schedule readScheduleAfterChange= (Schedule) oiss.readObject();
+        oiss.close();
+        System.out.println("================change=============");
+        List<DateSchedule> dses2 = readScheduleAfterChange.getDateScheduleList();
+        for (int i = 0; i < dses2.size(); i++) {
+            System.out.println(dses2.get(i).toString());
+        }
+
 //        System.out.println("========schedule actual");
 //        List<DateSchedule> dses = readSchedule.getDateScheduleList();
 //
