@@ -18,7 +18,8 @@ public class InitData {
     public static List<RegistrationClass> registrationClasses;
     public static List<Subject> subjects;
     public static List<String> examDates;
-
+    public static int academyYear;
+    public static int semester;
     static {
         // init data
         initData();
@@ -31,6 +32,8 @@ public class InitData {
         subjects = ExcelFile.getSubjects();
         registrationClasses = ExcelFile.getRegistrationClass(InitData.subjects);
         examDates = ExcelFile.getDates();
+        academyYear=ExcelFile.getAcademyYear();
+        semester=ExcelFile.getSemester();
     }
 
     public static void main(String[] args) {

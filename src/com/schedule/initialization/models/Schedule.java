@@ -1,6 +1,7 @@
 package com.schedule.initialization.models;
 
 import com.schedule.initialization.data.InitData;
+import com.schedule.initialization.dto.TempGenerateInitSchedule;
 import com.schedule.initialization.gwo.GWO;
 import com.schedule.initialization.utils.ExcelFile;
 import org.apache.poi.ss.usermodel.Row;
@@ -21,13 +22,31 @@ import java.util.stream.Collectors;
  * - fitness
  *
  */
-public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
+public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
     private List<DateSchedule> dateScheduleList;
     public double fitness;
     int remainSubject;
     List<Subject> subjectList;
     Map<Subject, Set<String>> subjectMap;
     List<SubjectSchedule> totalSubjectSchedule;
+    int semester;
+    int academyYear;
+
+    public int getSemester() {
+        return semester;
+    }
+
+    public void setSemester(int semester) {
+        this.semester = semester;
+    }
+
+    public int getAcademyYear() {
+        return academyYear;
+    }
+
+    public void setAcademyYear(int academyYear) {
+        this.academyYear = academyYear;
+    }
 
     public List<Integer> getScList() {
         return scList;
@@ -38,7 +57,8 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
     }
 
     List<Integer> scList;
-    public Schedule(List<String> dates , List<Integer> scList) throws IOException {
+
+    public Schedule(List<String> dates, List<Integer> scList) throws IOException {
 
         this.subjectList = InitData.subjects;
         subjectMap = new HashMap<>();
@@ -46,7 +66,9 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
             subjectMap.put(s, new HashSet<>());
         }
         generateSchedule(dates);
-        this.scList=scList;
+        this.scList = scList;
+        this.academyYear = InitData.academyYear;
+        this.semester = InitData.semester;
         fitness();
     }
 
@@ -59,7 +81,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
         }
         //list registration class
         List<RegistrationClass> classRooms = new ArrayList<>();
-        InitData.registrationClasses.forEach(item->{
+        InitData.registrationClasses.forEach(item -> {
             try {
                 classRooms.add(item.clone());
             } catch (CloneNotSupportedException e) {
@@ -69,11 +91,10 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
 //        BufferedReader reader = new BufferedReader(new FileReader("data/RegistrationClass"));
 //        String line = reader.readLine();
 
-        classRooms.forEach(item->{
+        classRooms.forEach(item -> {
             int currentCap = check.get(item.getSubject().getId());
             check.put(item.getSubject().getId(), currentCap + item.getEstimatedClassSizeReal());
         });
-
 
 
 //        while (line != null) {
@@ -139,26 +160,26 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
     }
 
     public Schedule clone() throws CloneNotSupportedException {
-        Schedule cloneSchedule = (Schedule)super.clone();
-        List dateScheduleListClone=new ArrayList();
-        for (DateSchedule d:dateScheduleList){
+        Schedule cloneSchedule = (Schedule) super.clone();
+        List dateScheduleListClone = new ArrayList();
+        for (DateSchedule d : dateScheduleList) {
             dateScheduleListClone.add(d.clone());
         }
         cloneSchedule.setDateScheduleList(dateScheduleListClone);
         cloneSchedule.setRemainSubject(this.remainSubject);
         //
-        List<Subject> subjectListClone=new ArrayList<>();
-        for(Subject s:subjectList){
+        List<Subject> subjectListClone = new ArrayList<>();
+        for (Subject s : subjectList) {
             subjectListClone.add(s.clone());
         }
         cloneSchedule.setSubjectList(subjectListClone);
         //
-        Map<Subject,Set<String>> subjectMapClone=new HashMap<>();
+        Map<Subject, Set<String>> subjectMapClone = new HashMap<>();
         for (Map.Entry<Subject, Set<String>> entry : subjectMap.entrySet()) {
-            subjectMapClone.put(entry.getKey().clone(),new HashSet<>(entry.getValue()));
+            subjectMapClone.put(entry.getKey().clone(), new HashSet<>(entry.getValue()));
         }
         cloneSchedule.setSubjectMap(subjectMapClone);
-        cloneSchedule.scList=new ArrayList<>(scList);
+        cloneSchedule.scList = new ArrayList<>(scList);
         cloneSchedule.fitness();
         return cloneSchedule;
     }
@@ -204,16 +225,18 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
         }
         this.fitness();
     }
+
     public void generateSchedule(List<String> dates) throws IOException {
         List<DateSchedule> dateScheduleList = new ArrayList<>();
         List<Subject> remainSubjectList = new ArrayList<>(this.subjectList);
-
+        List<RegistrationClass> usedRegistrationClasses = new ArrayList<>();
+        TempGenerateInitSchedule temp=new TempGenerateInitSchedule(remainSubjectList,usedRegistrationClasses);
         for (String d : dates) {
-            DateSchedule ds = new DateSchedule(d, remainSubjectList, subjectMap);
-            remainSubjectList = ds.generateInitialSubjectSchedule();
+            DateSchedule ds = new DateSchedule(d, subjectMap,temp);
+            temp = ds.generateInitialSubjectSchedule();
             dateScheduleList.add(ds);
         }
-        this.remainSubject = remainSubjectList.size();
+        this.remainSubject = temp.getRemainSubject().size();
         this.dateScheduleList = dateScheduleList;
     }
 
@@ -237,11 +260,10 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
         double result = 0;
 
 
-
         for (int i = 0; i < dateScheduleList.size(); i++) {
             // ds lịch thi của ngày
             List<SubjectSchedule> newSubjectSchedules = dateScheduleList.get(i).subjectSchedules.stream()
-                    .filter(item->item.getSubject().getExamForms()!=2).collect(Collectors.toList());
+                    .filter(item -> item.getSubject().getExamForms() != 2).collect(Collectors.toList());
 
             // không sắp xếp ca thi rời rạc, làm khó cán bộ coi thi
             // ca 1: 5 phòng thi
@@ -278,7 +300,7 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
                     min = entry.getValue();
                 } else {
                     isDESC = false;
-                    h1 ++;
+                    h1++;
                 }
             }
             if (isDESC) h1 = 0;
@@ -362,18 +384,18 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
             Map<String, Set<String>> mapCountSubjectOfShift = new HashMap<>();
 
             newSubjectSchedules.stream().forEach(e -> {
-                if (mapCountSubjectOfShift.get(e.getShift()+"") == null) {
+                if (mapCountSubjectOfShift.get(e.getShift() + "") == null) {
                     Set<String> subjectIds = new HashSet<>();
                     subjectIds.add(e.getSubject().getId());
-                    mapCountSubjectOfShift.put(e.getShift()+"", subjectIds);
+                    mapCountSubjectOfShift.put(e.getShift() + "", subjectIds);
                 } else {
-                    mapCountSubjectOfShift.get(e.getShift()+"").add(e.getSubject().getId());
+                    mapCountSubjectOfShift.get(e.getShift() + "").add(e.getSubject().getId());
                 }
             });
 
             int h4 = 0;
             for (Map.Entry<String, Set<String>> entry : mapCountSubjectOfShift.entrySet()) {
-                if(entry.getValue().size() > 1){
+                if (entry.getValue().size() > 1) {
                     h4++;
                 }
             }
@@ -383,9 +405,9 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
             // Một phòng thi sau khi sắp xếp phải có sv tham dự lớn hơn 50% sức chứa của phòng thi đó
             AtomicInteger h5 = new AtomicInteger();
             newSubjectSchedules.forEach(e -> {
-                double rate = (double)e.getRoom().getCapacity() / e.getRoom().getRoom().getCapacityExam();
+                double rate = (double) e.getRoom().getCapacity() / e.getRoom().getRoom().getCapacityExam();
                 // 0 : chỉ xảy ra đối mới môn thi vấn đáp
-                if(rate < 0.5 && rate != 0){
+                if (rate < 0.5 && rate != 0) {
                     h5.getAndIncrement();
                 }
             });
@@ -409,9 +431,9 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
             });
             int h6 = 0;
             for (Map.Entry<String, Set<Integer>> entry : mapCountShiftOfCourse.entrySet()) {
-               if(entry.getValue().size() > 1){
-                   h6++;
-               }
+                if (entry.getValue().size() > 1) {
+                    h6++;
+                }
             }
             result += h6 * scList.get(5);
         }
@@ -443,13 +465,12 @@ public class Schedule implements Comparable<Schedule> ,Cloneable, Serializable {
 //            }
 //            line = reader.readLine();
 //        }
-        Set<String> setA=new HashSet<>();
+        Set<String> setA = new HashSet<>();
         setA.add("2022-12-7");
-        Set<String> setB=new HashSet<>();
+        Set<String> setB = new HashSet<>();
         setB.add("2022-12-7");
         System.out.println(setA.containsAll(setB));
     }
-
 
 
     @Override

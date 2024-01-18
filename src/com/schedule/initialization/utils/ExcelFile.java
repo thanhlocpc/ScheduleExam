@@ -26,7 +26,7 @@ public class ExcelFile {
 
     static {
         try {
-            fis = new FileInputStream("data/data.xlsx");
+            fis = new FileInputStream("data/data-23-24.xlsx");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -45,6 +45,22 @@ public class ExcelFile {
     public ExcelFile() throws IOException {
     }
 
+    public static int getSemester() {
+        Sheet sheet = wb.getSheetAt(5);
+        Iterator<Row> itr = sheet.iterator();
+        itr.next();
+        Row row = itr.next();
+
+        return (int)row.getCell(1).getNumericCellValue();
+    }
+    public static int getAcademyYear() {
+        Sheet sheet = wb.getSheetAt(5);
+        Iterator<Row> itr = sheet.iterator();
+        itr.next();
+        Row row = itr.next();
+
+        return (int)row.getCell(0).getNumericCellValue();
+    }
     public static List<String> getDates() {
         List<String> date = new ArrayList<>();
         Sheet sheet = wb.getSheetAt(4);
@@ -56,7 +72,6 @@ public class ExcelFile {
         }
         return date;
     }
-
     public static List<ClassRoom> getClassroomsTH() {
         List<ClassRoom> classRooms = new ArrayList<>();
         Sheet sheet = wb.getSheetAt(1);
@@ -116,6 +131,9 @@ public class ExcelFile {
         itr.next();
         while (itr.hasNext()) {
             Row row = itr.next();
+            if(row.getCell(0)==null){
+                break;
+            }
             Subject subject = null;
 
             for (Subject s : subjectList) {
