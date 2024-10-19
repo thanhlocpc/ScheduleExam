@@ -6,6 +6,7 @@ import com.schedule.initialization.models.DateSchedule;
 import com.schedule.initialization.models.Schedule;
 import com.schedule.initialization.models.Subject;
 import com.schedule.initialization.models.*;
+import com.schedule.initialization.sa.SA;
 import com.schedule.initialization.utils.ExcelFile;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -19,6 +20,7 @@ public class GWO {
     public Schedule finalSchedule;
     public List<Integer> scList=new ArrayList<>();
     public Workbook data;
+    private SA sa;
     public GWO(){
 
     };
@@ -28,6 +30,7 @@ public class GWO {
         this.nWolf=properties.get(0);
         this.nIter=properties.get(1);
         this.scList=properties.subList(2,properties.size());
+        this.sa= new SA(dates,scList);
     }
 
     public Workbook getData() {
@@ -47,13 +50,15 @@ public class GWO {
         InitData.examDates = ExcelFile.getDates();
     }
 
-    public Schedule[] createPopulation() throws IOException {
+    public Schedule[] createPopulation() throws IOException, CloneNotSupportedException {
 //        System.out.println("craete popuulation");
         Schedule[] schedules = new Schedule[nWolf];
         for (int i = 0; i < schedules.length; i++) {
 //            System.out.println(i);
             while (true) {
 //                System.out.println("ture");
+//                schedules[i] = sa.sa();
+
                 schedules[i] = new Schedule(dates,scList);
                 if (schedules[i].isAccepted())
                     break;
@@ -107,17 +112,17 @@ public class GWO {
         Schedule beta = schedules[1];
         Schedule delta = schedules[2];
 
-        double beginAlphaFitness = alpha.fitness;
-        System.out.println("beginAlphaFitness:" + beginAlphaFitness);
-        alpha.getDateScheduleList().forEach(System.out::println);
-
-        double beginBetaFitness=beta.fitness;
-        System.out.println("beginBetaFitness:"+beginBetaFitness);
-        beta.getDateScheduleList().forEach(System.out::println);
-
-        double beginDeltaFitness=delta.fitness;
-        System.out.println("beginDeltaFitness:"+beginDeltaFitness);
-        delta.getDateScheduleList().forEach(System.out::println);
+//        double beginAlphaFitness = alpha.fitness;
+//        System.out.println("beginAlphaFitness:" + beginAlphaFitness);
+//        alpha.getDateScheduleList().forEach(System.out::println);
+//
+//        double beginBetaFitness=beta.fitness;
+//        System.out.println("beginBetaFitness:"+beginBetaFitness);
+//        beta.getDateScheduleList().forEach(System.out::println);
+//
+//        double beginDeltaFitness=delta.fitness;
+//        System.out.println("beginDeltaFitness:"+beginDeltaFitness);
+//        delta.getDateScheduleList().forEach(System.out::println);
 
         int iter = 0;
         int bestIter = 0;
@@ -214,8 +219,10 @@ public class GWO {
 
 
 //        System.out.println("begin alpha fitness:" + beginAlphaFitness);
-        System.out.println("best iter:" + bestIter);
-        System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
+//        System.out.println("best iter:" + bestIter);
+        System.out.print(bestIter+",");
+//        System.out.println("best schedule fitness:" + bestSchedultBeforeChange.fitness);
+        System.out.print(bestSchedultBeforeChange.fitness+",");
 //        System.out.println("is accepted:" + bestSchedultBeforeChange.isAccepted());
         this.finalSchedule = bestSchedultBeforeChange.clone();
         finalSchedule.fitness();
@@ -267,28 +274,40 @@ public class GWO {
 
 //        Schedule[] schedules = com.schedule.initialization.gwo.createPopulation();
         beginTime = System.currentTimeMillis();
-
+        System.out.print(0+",");
         this.gwo();
         Schedule bestSchedule = finalSchedule;
+        double sumFitness = finalSchedule.fitness;
         endTime = System.currentTimeMillis();
-        System.out.println("iter " + 0 + ":" + (endTime - beginTime) / 1000);
+        double averageRuntime=(endTime-beginTime)/1000;
+
+//        System.out.println("iter " + 0 + ":" + (endTime - beginTime) / 1000);
+        System.out.println((endTime - beginTime) / 1000);
         int at = 0;
         for (int i = 1; i < generateTime; i++) {
-            System.out.println("==========begin " + i + " ==============");
+//            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
-            System.out.println("schedule " + i + ":");
+//            System.out.println("schedule " + i + ":");
+            System.out.print(i+",");
             gwo();
+            sumFitness+=finalSchedule.fitness;
             if (finalSchedule.fitness < bestSchedule.fitness) {
                 bestSchedule =finalSchedule.clone();
                 bestSchedule.fitness();
                 at = i;
             }
             endTime = System.currentTimeMillis();
-            System.out.println("iter " + i + ":" + (endTime - beginTime) / 1000);
-            System.out.println("==========end==============");
+            averageRuntime+=(endTime-beginTime)/1000;
+
+//            System.out.println("iter " + i + ":" + (endTime - beginTime) / 1000);
+            System.out.println((endTime - beginTime) / 1000);
+//            System.out.println("==========end==============");
         }
         System.out.println("best schedule at:" + at);
         System.out.println("best schedule fitness:" + bestSchedule.fitness);
+        System.out.println("average fitness after run "+ generateTime+":" + sumFitness/generateTime);
+        System.out.println("average runtime after run "+ generateTime+":" + averageRuntime/generateTime);
+
 
 //        FileOutputStream fileOut = new FileOutputStream(this.sourceFolder+"/result");
 //        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
@@ -402,7 +421,7 @@ public class GWO {
         List<String> dates = ExcelFile.getDates();
         long beginTime = 0;
         long endTime = 0;
-        List properties=Arrays.asList(50,100,10,10,10,10,10,10);
+        List properties=Arrays.asList(20,100,10,10,10,10,10,10);
 //        GWO gwo = new GWO(dates,properties);
 //        for(int i=0;i<3;i++){
 //
@@ -413,22 +432,22 @@ public class GWO {
 //            System.out.println(i+","+((endTime-beginTime)/1000)+","+gwo.finalSchedule.fitness);
 //        }
 
-        byte[] bestSchedule=gwo.generateNewSchedule(1);
+        byte[] bestSchedule=gwo.generateNewSchedule(30);
 //
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(bestSchedule);
-        byte[] buff = bos.toByteArray();
-        oos.close();
-
-        FileOutputStream fileOut = new FileOutputStream("data/result");
-        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        Schedule readSchedule1= (Schedule) ois.readObject();
-        objectOut.writeObject(readSchedule1);
-        objectOut.close();
+//        ObjectOutputStream oos = new ObjectOutputStream(bos);
+//        oos.writeObject(bestSchedule);
+//        byte[] buff = bos.toByteArray();
+//        oos.close();
+//
+//        FileOutputStream fileOut = new FileOutputStream("data/result");
+//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
+//        ObjectInputStream ois = new ObjectInputStream(bis);
+//        Schedule readSchedule1= (Schedule) ois.readObject();
+//        objectOut.writeObject(readSchedule1);
+//        objectOut.close();
 
 //        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
 //        ObjectInputStream ois = new ObjectInputStream(bis);

@@ -56,8 +56,7 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
     Map<String, SubjectSchedule> thClassMap;//s
 
     Map<String, SubjectSchedule> ltClassMap;
-    List<RegistrationClass> usedRegistrationClasses;
-    List<RegistrationClass>  usedRegistrationClassesToday = new ArrayList<>();
+
     public DateSchedule clone() throws CloneNotSupportedException {
         DateSchedule ds = (DateSchedule) super.clone();
         ds.setDate(this.date);
@@ -131,10 +130,9 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
 
     }
 
-    public DateSchedule(String date, Map<Subject, Set<String>> subjectMap,TempGenerateInitSchedule temp) throws IOException {
+    public DateSchedule(String date, List<Subject> subjectList, Map<Subject, Set<String>> subjectMap) throws IOException {
         this.date = date;
-        this.subjectList = temp.getRemainSubject();
-        this.usedRegistrationClasses = temp.getRegistrationClasses();
+        this.subjectList = subjectList;
         usedList = new ArrayList<>();
         usedListTH = new ArrayList<>();
         usedListLT = new ArrayList<>();
@@ -148,8 +146,8 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
     }
 
     public boolean isContainSubject(Subject subject) {
-        for (Map.Entry<Subject, Set<String>> entry : subjectMap.entrySet()) {
-            if (subject.getId().equals(entry.getKey().getId()))
+        for (Subject entry : subjectMap.keySet()) {
+            if (subject.getId().equals(entry.getId()))
                 return true;
         }
         return false;
@@ -409,10 +407,8 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
             Subject s = preparedSubject.get(si);
 //            System.out.println("generate schedule for subject:" + s.toString());
             List<RegistrationClass> groupSubject = getGroupClassOfSubject(registrationClasses, s);
-            List<RegistrationClass> groupSubjectFilter=groupSubject.stream()
-                    .filter(item-> usedRegistrationClasses.stream().noneMatch(i->i.getId().equals(item.getId()))).collect(Collectors.toList());
 //            System.out.println("    number of group subject for " + s.getName() + " :" + groupSubject.size());
-            for (RegistrationClass rs : groupSubjectFilter) {
+            for (RegistrationClass rs : groupSubject) {
 //                System.out.println("    group subject:" + rs.toString());
                 int numberOfStudent = rs.getEstimatedClassSizeReal();
                 int examRoomIndex = 0;
@@ -483,7 +479,6 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                             set.add(this.date);
                                             subjectMap.put(s, set);
                                             thClassMap.put(cl.getName() + "-" + i, ss);
-                                            usedRegistrationClassesToday.add(rs);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -535,7 +530,7 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                             set.add(this.date);
                                             subjectMap.put(s, set);
                                             thClassMap.put(cl.getName() + "-" + i, ss);
-                                            usedRegistrationClassesToday.add(rs);
+
                                             totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
                                                 break shiftLoop;
@@ -551,8 +546,7 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
 
 //                                System.out.println("fd");
                             }
-                        }
-                        else if (s.getExamForms() == 0) {
+                        } else if (s.getExamForms() == 0) {
 //                            if (usedList.size() > totalClassRoomLTList.size() * 4 - 1) {
                             if (usedListLT.size() > totalClassRoomLTList.size() * 4 - 1) {
 //                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
@@ -584,8 +578,6 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                             set.add(this.date);
                                             subjectMap.put(s, set);
                                             ltClassMap.put(cl.getName() + "-" + i, ss);
-                                            usedRegistrationClassesToday.add(rs);
-
                                             totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
                                                 break shiftLoop;
@@ -635,8 +627,6 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                             set.add(this.date);
                                             subjectMap.put(s, set);
                                             ltClassMap.put(cl.getName() + "-" + i, ss);
-                                            usedRegistrationClassesToday.add(rs);
-
                                             totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
                                                 break shiftLoop;
@@ -650,17 +640,8 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                     }
                                 }
                             }
-                        }
-                        else if (s.getExamForms() == 2) {
-                            List<RegistrationClass> list=usedRegistrationClasses.stream()
-                                    .filter(item->item.getSubject().getId().equals(rs.getSubject().getId())).collect(Collectors.toList());
-                            if(usedRegistrationClassesToday.stream().anyMatch(item->item.getSubject().getId().equals(rs.getSubject().getId()))){
-                               if(list.size()<groupSubject.size()){
-                                   remainSubject.add(preparedSubject.get(si));
-                                   continue subjectLoop;
-                               }
-                            }
-                            //  if (usedList.size() > totalClassRoomTHList.size() * 4 - 1) {
+                        } else if (s.getExamForms() == 2) {
+//                            if (usedList.size() > totalClassRoomTHList.size() * 4 - 1) {
                             if (usedListTH.size() > totalClassRoomTHList.size() * 4 - 1 || i != 0) {
 //                                remainSubject.addAll(preparedSubject.subList(si, preparedSubject.size()));
                                 remainSubject.add(preparedSubject.get(si));
@@ -703,8 +684,6 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                             subjectSchedules.add(ss);
                                             thClassMap.put(cl.getName() + "-" + k, ss);
                                         }
-                                        usedRegistrationClassesToday.add(rs);
-
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -763,7 +742,6 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
                                                 subjectSchedules.add(ss);
                                                 thClassMap.put(cl.getName() + "-" + k, ss);
                                             }
-                                            usedRegistrationClassesToday.add(rs);
 
                                             totalClassRoomUsedForSubjectShift++;
                                             if (numberOfStudent == 0) {
@@ -782,7 +760,6 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
             }
 //            System.out.println("remain subjects:"+remainSubject.size());
         }
-        usedRegistrationClasses.addAll(usedRegistrationClassesToday);
         preparedSubject.clear();
         return remainSubject;
     }
@@ -797,17 +774,26 @@ public class DateSchedule implements Comparable<DateSchedule>, Cloneable, Serial
         this.preparedSubject = preparedSubject;
     }
 
-    public TempGenerateInitSchedule generateInitialSubjectSchedule() throws IOException {
+    public List<Subject> generateInitialSubjectSchedule() throws IOException {
         Random rd = new Random();
         int numSubject = subjectList.size() < 2 ? subjectList.size() : rd.nextInt((int) (subjectList.size() * 0.3) + 1) + 1;
 
         for (int i = 0; i < numSubject; i++) {
             int randomIndex = rd.nextInt(remainSubject.size());
-            preparedSubject.add(remainSubject.get(randomIndex));
-            remainSubject.remove(randomIndex);
+            Subject prepareSub = remainSubject.get(randomIndex);
+            int indexSlashPrepareSub = prepareSub.getId().lastIndexOf("-");
+            if (indexSlashPrepareSub == -1 || preparedSubject.stream().noneMatch(item -> {
+                if (item.getId().lastIndexOf("-") == -1)
+                    return false;
+                return item.getId().substring(0, item.getId().lastIndexOf("-"))
+                        .equals(prepareSub.getId().substring(0, indexSlashPrepareSub));
+            })) {
+                preparedSubject.add(prepareSub);
+                remainSubject.remove(randomIndex);
+            }
         }
         generateSchedule();
-        return new TempGenerateInitSchedule(remainSubject,usedRegistrationClasses);
+        return remainSubject;
     }
 
     public String toString() {

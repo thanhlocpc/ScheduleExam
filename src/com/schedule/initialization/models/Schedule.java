@@ -195,12 +195,23 @@ public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
     public void changeSchedule(Map.Entry<Subject, Set<String>> subjectChangeEntry) throws IOException {
         Set<String> dateChangeSet = subjectChangeEntry.getValue();
         Subject subjectChange = subjectChangeEntry.getKey();
+        boolean canSwap = true;
         for (DateSchedule ds : dateScheduleList) {
             if (ds.isContainSubject(subjectChange)) {
-                ds.deleteSubject(subjectChange);
+                Set<Subject> subjectSet = ds.subjectMap.keySet();
+                for (Subject entry : subjectSet) {
+                    if (subjectChange.getId().lastIndexOf("-") != -1 && entry.getId().lastIndexOf("-") != -1) {
+                        if (entry.getId().substring(0, entry.getId().lastIndexOf("-"))
+                                .equals(subjectChange.getId().substring(0, subjectChange.getId().lastIndexOf("-")))) {
+                            canSwap = false;
+                        }
+                    }
+                }
+                if (canSwap)
+                    ds.deleteSubject(subjectChange);
             }
         }
-        if (dateChangeSet.toArray().length > 0) {
+        if (dateChangeSet.toArray().length > 0 && canSwap) {
             DateSchedule d = getDateScheduleByDate((String) dateChangeSet.toArray()[0]);
             long begin_add_new_subject = System.currentTimeMillis();
             d.addNewSubject(subjectChange);
@@ -229,14 +240,13 @@ public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
     public void generateSchedule(List<String> dates) throws IOException {
         List<DateSchedule> dateScheduleList = new ArrayList<>();
         List<Subject> remainSubjectList = new ArrayList<>(this.subjectList);
-        List<RegistrationClass> usedRegistrationClasses = new ArrayList<>();
-        TempGenerateInitSchedule temp=new TempGenerateInitSchedule(remainSubjectList,usedRegistrationClasses);
+
         for (String d : dates) {
-            DateSchedule ds = new DateSchedule(d, subjectMap,temp);
-            temp = ds.generateInitialSubjectSchedule();
+            DateSchedule ds = new DateSchedule(d, remainSubjectList, subjectMap);
+            remainSubjectList = ds.generateInitialSubjectSchedule();
             dateScheduleList.add(ds);
         }
-        this.remainSubject = temp.getRemainSubject().size();
+        this.remainSubject = remainSubjectList.size();
         this.dateScheduleList = dateScheduleList;
     }
 

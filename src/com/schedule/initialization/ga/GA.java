@@ -1,6 +1,8 @@
 package com.schedule.initialization.ga;
 
 import com.schedule.initialization.models.*;
+import com.schedule.initialization.sa.SA;
+import com.schedule.initialization.utils.ExcelFile;
 
 
 import java.io.IOException;
@@ -12,22 +14,25 @@ import java.util.*;
  * @created 2/6/2023
  */
 public class GA {
-    public static final int POP_SIZE = 100;
-    public static final int N_ITER = 1000;
+    public static final int POP_SIZE = 50;
+    public static final int N_ITER = 500;
     public List<String> dates;
     List<Schedule> schedules = new ArrayList<>();
     Random rd = new Random();
     public List<Integer> scList;
+    private SA sa;
     public GA(List<String> dates,List<Integer> scList) {
         this.dates = dates;
         this.scList=scList;
+        sa = new SA(dates,scList);
     }
 
-    public List<Schedule> createPopulation() throws IOException {
+    public List<Schedule> createPopulation() throws IOException, CloneNotSupportedException {
         Schedule temp;
         for (int i = 0; i < POP_SIZE; i++) {
             while (true) {
                 temp = new Schedule(dates,scList);
+//                temp=sa.sa();
                 if (temp.isAccepted()) {
                     schedules.add(temp);
                     break;
@@ -49,8 +54,8 @@ public class GA {
                 if (rd.nextInt(100) <= 0.3)
                     mutate(child);
 
-                if (child.fitness < 200) {
-//                    System.out.println("iter: " + iter);
+                if (child.fitness < 170) {
+                    System.out.print( iter+",");
                     return child;
                 }
                 newSchedule.add(child);
@@ -64,6 +69,7 @@ public class GA {
                 return Double.compare(o1.fitness, o2.fitness);
             }
         });
+        System.out.print( iter+",");
         return schedules.get(0);
     }
 
@@ -143,34 +149,52 @@ public class GA {
     }
 
     public static void main(String[] args) throws IOException, CloneNotSupportedException {
-        List<String> dates = new ArrayList<>();
-        dates.add("2022-10-12");
-        dates.add("2022-10-13");
-        dates.add("2022-10-14");
-        dates.add("2022-10-15");
-        dates.add("2022-10-16");
-        dates.add("2022-10-17");
-        dates.add("2022-10-18");
-        dates.add("2022-10-19");
-        dates.add("2022-10-20");
+        List<String> dates = ExcelFile.getDates();
         long beginTime = 0;
         long endTime = 0;
-        List properties= Arrays.asList(10,10,10,10,10,10);
-        for (int i = 0; i < 30; i++) {
+        List<Integer> properties= Arrays.asList(10,10,10,10,10,10);
+        beginTime = System.currentTimeMillis();
+        System.out.print(0+",");
+        Schedule bestSchedule= new GA(dates,properties).ga();
+        endTime = System.currentTimeMillis();
+        double bestFitness = bestSchedule.fitness;
+        System.out.print(bestFitness+",");
+        double average = bestSchedule.fitness;
+        int runTime=30;
+        double averageRuntime=(endTime-beginTime)/1000;
+        System.out.println((endTime-beginTime)/1000);
+        for (int i = 1; i < runTime; i++) {
 //            System.out.println("==========begin " + i + " ==============");
             beginTime = System.currentTimeMillis();
 //            System.out.println("schedule " + i + ":");
             GA ga = new GA(dates,properties);
+            System.out.print(i+",");
             Schedule result = ga.ga();
-//            System.out.println(result.fitness);
+            System.out.print(result.fitness+",");
 //            System.out.println("is accepted:" + result.isAccepted());
 //            result.getDateScheduleList().forEach(item -> {
 //                System.out.println(item);
 //            });
             endTime = System.currentTimeMillis();
-            System.out.println(i+","+((endTime-beginTime)/1000)+","+result.fitness);
+            average+=result.fitness;
+            if(result.fitness<bestFitness){
+                bestFitness=result.fitness;
+                bestSchedule=result;
+            }
+            averageRuntime+=(endTime-beginTime)/1000;
+//            System.out.println(i+","+((endTime-beginTime)/1000));
+            System.out.println((endTime-beginTime)/1000);
 //            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
 //            System.out.println("==========end==============");
         }
+        System.out.println("best schedule fitness:" + bestSchedule.fitness);
+        System.out.println("average fitness after run "+ runTime+":" + average/runTime);
+        System.out.println("average runtime after run "+ runTime+":" + averageRuntime/runTime);
+
+        List<DateSchedule> dses1 = bestSchedule.getDateScheduleList();
+        for (int i = 0; i < dses1.size(); i++) {
+            System.out.println(dses1.get(i).toString());
+        }
+
     }
 }

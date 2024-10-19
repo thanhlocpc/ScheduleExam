@@ -114,7 +114,8 @@ public class ExcelFile {
         itr.next();
         while (itr.hasNext()) {
             Row row = itr.next();
-            subjects.add(new Subject((int) row.getCell(0).getNumericCellValue() + "",
+//            System.out.println(row.getCell(0).getStringCellValue());
+            subjects.add(new Subject(row.getCell(0).getStringCellValue() ,
                     row.getCell(1).getStringCellValue(),
                     (int) row.getCell(2).getNumericCellValue(),
                     (int) row.getCell(3).getNumericCellValue(),
