@@ -56,9 +56,7 @@ public class GWO {
         for (int i = 0; i < schedules.length; i++) {
 //            System.out.println(i);
             while (true) {
-//                System.out.println("ture");
 //                schedules[i] = sa.sa();
-
                 schedules[i] = new Schedule(dates,scList);
                 if (schedules[i].isAccepted())
                     break;
@@ -421,7 +419,7 @@ public class GWO {
         List<String> dates = ExcelFile.getDates();
         long beginTime = 0;
         long endTime = 0;
-        List properties=Arrays.asList(20,100,10,10,10,10,10,10);
+        List properties=Arrays.asList(50,100,10,10,10,10,10,10);
 //        GWO gwo = new GWO(dates,properties);
 //        for(int i=0;i<3;i++){
 //
@@ -432,7 +430,7 @@ public class GWO {
 //            System.out.println(i+","+((endTime-beginTime)/1000)+","+gwo.finalSchedule.fitness);
 //        }
 
-        byte[] bestSchedule=gwo.generateNewSchedule(30);
+        byte[] bestSchedule=gwo.generateNewSchedule(10);
 //
 //        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //
@@ -441,13 +439,13 @@ public class GWO {
 //        byte[] buff = bos.toByteArray();
 //        oos.close();
 //
-//        FileOutputStream fileOut = new FileOutputStream("data/result");
-//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-//        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
-//        ObjectInputStream ois = new ObjectInputStream(bis);
-//        Schedule readSchedule1= (Schedule) ois.readObject();
-//        objectOut.writeObject(readSchedule1);
-//        objectOut.close();
+        FileOutputStream fileOut = new FileOutputStream("data/result");
+        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Schedule readSchedule1= (Schedule) ois.readObject();
+        objectOut.writeObject(readSchedule1);
+        objectOut.close();
 
 //        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
 //        ObjectInputStream ois = new ObjectInputStream(bis);
@@ -459,11 +457,11 @@ public class GWO {
 //        Schedule readSchedule= (Schedule) objectInputStream.readObject();
 //        objectInputStream.close();
 
-//        System.out.println("========schedule read from file");
-//        List<DateSchedule> dses1 = readSchedule1.getDateScheduleList();
-//        for (int i = 0; i < dses1.size(); i++) {
-//            System.out.println(dses1.get(i).toString());
-//        }
+        System.out.println("========schedule read from file");
+        List<DateSchedule> dses1 = readSchedule1.getDateScheduleList();
+        for (int i = 0; i < dses1.size(); i++) {
+            System.out.println(dses1.get(i).toString());
+        }
 
 //        List<ChangeSubjectScheduleRequest> cssr=new ArrayList<>();
 //        cssr.add(new ChangeSubjectScheduleRequest("214353-01","2022-10-12","2022-10-13",1,0));

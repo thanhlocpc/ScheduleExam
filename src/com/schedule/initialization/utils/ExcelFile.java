@@ -70,6 +70,9 @@ public class ExcelFile {
             Row row = itr.next();
             date.add(row.getCell(0).getStringCellValue());
         }
+//        System.out.println("====date====");
+//        System.out.println(date.size());
+//        System.out.println(date);
         return date;
     }
     public static List<ClassRoom> getClassroomsTH() {
@@ -82,10 +85,11 @@ public class ExcelFile {
             classRooms.add(new ClassRoom((int) row.getCell(0).getNumericCellValue() + ""
                     , row.getCell(1).getStringCellValue()
                     , (int) row.getCell(2).getNumericCellValue()
-                    , (int) row.getCell(3).getNumericCellValue()
-                    , (int) row.getCell(4).getNumericCellValue()
-                    , (int) row.getCell(5).getNumericCellValue()));
+                    , (int) row.getCell(3).getNumericCellValue()));
         }
+//        System.out.println("====class room th ====");
+//        System.out.println(classRooms.size());
+//        System.out.println(classRooms);
         return classRooms;
     }
 
@@ -100,10 +104,11 @@ public class ExcelFile {
             classRooms.add(new ClassRoom((int) row.getCell(0).getNumericCellValue() + ""
                     , row.getCell(1).getStringCellValue()
                     , (int) row.getCell(2).getNumericCellValue()
-                    , (int) row.getCell(3).getNumericCellValue()
-                    , (int) row.getCell(4).getNumericCellValue()
-                    , (int) row.getCell(5).getNumericCellValue()));
+                    , (int) row.getCell(3).getNumericCellValue()));
         }
+//        System.out.println("====class room lt====");
+//        System.out.println(classRooms.size());
+//        System.out.println(classRooms);
         return classRooms;
     }
 
@@ -111,6 +116,7 @@ public class ExcelFile {
         List<Subject> subjects = new ArrayList<>();
         Sheet sheet = wb.getSheetAt(3);
         Iterator<Row> itr = sheet.iterator();
+//        System.out.println(sheet.getSheetName());
         itr.next();
         while (itr.hasNext()) {
             Row row = itr.next();
@@ -122,6 +128,9 @@ public class ExcelFile {
                     (int) row.getCell(4).getNumericCellValue(),
                     (int) row.getCell(5).getNumericCellValue()));
         }
+//        System.out.println("====subject====");
+//        System.out.println(subjects.size());
+//        System.out.println(subjects);
         return subjects;
     }
 
@@ -185,6 +194,9 @@ public class ExcelFile {
             }
         }
         InitData.subjects.addAll(newSubject);
+//        System.out.println("====registrationClasses====");
+//        System.out.println(registrationClasses.size());
+//        System.out.println(registrationClasses);
         return registrationClasses;
     }
 
