@@ -56,8 +56,8 @@ public class GWO {
         for (int i = 0; i < schedules.length; i++) {
 //            System.out.println(i);
             while (true) {
-//                schedules[i] = sa.sa();
-                schedules[i] = new Schedule(dates,scList);
+                schedules[i] = sa.sa();
+//                schedules[i] = new Schedule(dates,scList);
                 if (schedules[i].isAccepted())
                     break;
             }
@@ -317,17 +317,6 @@ public class GWO {
         byte[] buff = bos.toByteArray();
         return buff;
     }
-    public  List<Subject> getSubjectList() throws IOException {
-        List<Subject> subjectList = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader("data/subject"));
-        String line = reader.readLine();
-        while (line != null) {
-            String[] tokens = line.split(",");
-            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));
-            line = reader.readLine();
-        }
-        return subjectList;
-    }
     public Schedule convertByteToSchedule(byte[] array) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bis=new ByteArrayInputStream(array);
         ObjectInputStream ois = new ObjectInputStream(bis);
@@ -368,7 +357,7 @@ public class GWO {
     }
 
     public  byte[] changeSchedule(List<ChangeScheduleRequest> changeScheduleRequestList, Schedule schedule) throws IOException, CloneNotSupportedException {
-        List<Subject> subjectList = getSubjectList();
+        List<Subject> subjectList = ExcelFile.getSubjects();
         Map<Subject, Set<String>> map = new HashMap<>();
         this.scList=schedule.getScList();
         boolean isChange=false;
@@ -430,7 +419,7 @@ public class GWO {
 //            System.out.println(i+","+((endTime-beginTime)/1000)+","+gwo.finalSchedule.fitness);
 //        }
 
-        byte[] bestSchedule=gwo.generateNewSchedule(10);
+        byte[] bestSchedule=gwo.generateNewSchedule(30);
 //
 //        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //
@@ -439,13 +428,13 @@ public class GWO {
 //        byte[] buff = bos.toByteArray();
 //        oos.close();
 //
-        FileOutputStream fileOut = new FileOutputStream("data/result");
-        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        Schedule readSchedule1= (Schedule) ois.readObject();
-        objectOut.writeObject(readSchedule1);
-        objectOut.close();
+//        FileOutputStream fileOut = new FileOutputStream("data/result");
+//        ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
+//        ObjectInputStream ois = new ObjectInputStream(bis);
+//        Schedule readSchedule1= (Schedule) ois.readObject();
+//        objectOut.writeObject(readSchedule1);
+//        objectOut.close();
 
 //        ByteArrayInputStream bis=new ByteArrayInputStream(bestSchedule);
 //        ObjectInputStream ois = new ObjectInputStream(bis);
@@ -457,11 +446,11 @@ public class GWO {
 //        Schedule readSchedule= (Schedule) objectInputStream.readObject();
 //        objectInputStream.close();
 
-        System.out.println("========schedule read from file");
-        List<DateSchedule> dses1 = readSchedule1.getDateScheduleList();
-        for (int i = 0; i < dses1.size(); i++) {
-            System.out.println(dses1.get(i).toString());
-        }
+//        System.out.println("========schedule read from file");
+//        List<DateSchedule> dses1 = readSchedule1.getDateScheduleList();
+//        for (int i = 0; i < dses1.size(); i++) {
+//            System.out.println(dses1.get(i).toString());
+//        }
 
 //        List<ChangeSubjectScheduleRequest> cssr=new ArrayList<>();
 //        cssr.add(new ChangeSubjectScheduleRequest("214353-01","2022-10-12","2022-10-13",1,0));

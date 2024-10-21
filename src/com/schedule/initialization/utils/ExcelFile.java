@@ -45,22 +45,6 @@ public class ExcelFile {
     public ExcelFile() throws IOException {
     }
 
-    public static int getSemester() {
-        Sheet sheet = wb.getSheetAt(5);
-        Iterator<Row> itr = sheet.iterator();
-        itr.next();
-        Row row = itr.next();
-
-        return (int)row.getCell(1).getNumericCellValue();
-    }
-    public static int getAcademyYear() {
-        Sheet sheet = wb.getSheetAt(5);
-        Iterator<Row> itr = sheet.iterator();
-        itr.next();
-        Row row = itr.next();
-
-        return (int)row.getCell(0).getNumericCellValue();
-    }
     public static List<String> getDates() {
         List<String> date = new ArrayList<>();
         Sheet sheet = wb.getSheetAt(4);
@@ -75,6 +59,7 @@ public class ExcelFile {
 //        System.out.println(date);
         return date;
     }
+
     public static List<ClassRoom> getClassroomsTH() {
         List<ClassRoom> classRooms = new ArrayList<>();
         Sheet sheet = wb.getSheetAt(1);
@@ -85,7 +70,7 @@ public class ExcelFile {
             classRooms.add(new ClassRoom((int) row.getCell(0).getNumericCellValue() + ""
                     , row.getCell(1).getStringCellValue()
                     , (int) row.getCell(2).getNumericCellValue()
-                    , (int) row.getCell(3).getNumericCellValue()));
+                    , 1));
         }
 //        System.out.println("====class room th ====");
 //        System.out.println(classRooms.size());
@@ -104,7 +89,7 @@ public class ExcelFile {
             classRooms.add(new ClassRoom((int) row.getCell(0).getNumericCellValue() + ""
                     , row.getCell(1).getStringCellValue()
                     , (int) row.getCell(2).getNumericCellValue()
-                    , (int) row.getCell(3).getNumericCellValue()));
+                    , 0));
         }
 //        System.out.println("====class room lt====");
 //        System.out.println(classRooms.size());
@@ -121,12 +106,10 @@ public class ExcelFile {
         while (itr.hasNext()) {
             Row row = itr.next();
 //            System.out.println(row.getCell(0).getStringCellValue());
-            subjects.add(new Subject(row.getCell(0).getStringCellValue() ,
+            subjects.add(new Subject(row.getCell(0).getStringCellValue(),
                     row.getCell(1).getStringCellValue(),
                     (int) row.getCell(2).getNumericCellValue(),
-                    (int) row.getCell(3).getNumericCellValue(),
-                    (int) row.getCell(4).getNumericCellValue(),
-                    (int) row.getCell(5).getNumericCellValue()));
+                    (int) row.getCell(3).getNumericCellValue()));
         }
 //        System.out.println("====subject====");
 //        System.out.println(subjects.size());
@@ -141,7 +124,7 @@ public class ExcelFile {
         itr.next();
         while (itr.hasNext()) {
             Row row = itr.next();
-            if(row.getCell(0)==null){
+            if (row.getCell(0) == null) {
                 break;
             }
             Subject subject = null;
@@ -149,7 +132,7 @@ public class ExcelFile {
             for (Subject s : subjectList) {
                 String ssName = row.getCell(0).getStringCellValue();
                 if (s.getId().equals(ssName.substring(0, ssName.lastIndexOf("-")))) {
-                    subject = new Subject(s.getId(), s.getName(), s.getCredit(), s.getExamForms(), s.getExamTime(), s.getLessonTime());
+                    subject = new Subject(s.getId(), s.getName(), s.getExamForms(), s.getExamTime());
                     break;
                 }
             }
@@ -157,10 +140,9 @@ public class ExcelFile {
                 registrationClasses.add(new RegistrationClass(row.getCell(0).getStringCellValue(),
                         row.getCell(1).getStringCellValue(),
                         (int) row.getCell(2).getNumericCellValue(),
-                        (int) row.getCell(3).getNumericCellValue(),
                         subject,
-                        new Grade(row.getCell(4).getStringCellValue(), (int) row.getCell(6).getNumericCellValue() + ""),
-                        (int) row.getCell(5).getNumericCellValue()));
+                        row.getCell(3).getStringCellValue()
+                ));
             }
 
         }
@@ -171,14 +153,14 @@ public class ExcelFile {
                         registrationClasses.stream().filter(item -> item.getSubject().getId().equals(subject.getId()))
                                 .collect(Collectors.toList());
                 int sum = currentList.stream().map(RegistrationClass::getEstimatedClassSizeReal).reduce(0, Integer::sum);
-                int ratio = (int) Math.ceil((double) sum / (InitData.classRoomsTH.stream().map(ClassRoom::getCapacityExam).reduce(0, Integer::sum)*4));
+                int ratio = (int) Math.ceil((double) sum / (InitData.classRoomsTH.stream().map(ClassRoom::getCapacityExam).reduce(0, Integer::sum) * 4));
                 if (ratio > 1) {
                     int offset = Math.round(currentList.size() / ratio);
                     registrationClasses.removeAll(currentList);
                     for (int i = 1; i < ratio; i++) {
                         Subject subjectNext = subject.clone();
                         newSubject.add(subjectNext);
-                        subjectNext.setId(subjectNext.getId()+"-" + (i + 1));
+                        subjectNext.setId(subjectNext.getId() + "-" + (i + 1));
                         if (i == ratio - 1) {
                             for (int j = offset * i; j < currentList.size(); j++) {
                                 currentList.get(j).setSubject(subjectNext);

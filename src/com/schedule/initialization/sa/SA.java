@@ -30,20 +30,27 @@ public class SA {
 
     public Schedule sa() throws IOException, CloneNotSupportedException {
         int T = 3000;
+        int maxT=3000;
         Schedule current = createRandomSchedule();
         Schedule next = null;
-        while (current.fitness > 200) {
-            if(T==0)
+        while (current.fitness > 300) {
+            if(T==0){
                 break;
+            }
             next = createRandomSchedule();
             double delta = next.fitness - current.fitness;
+            double random=Math.random();
+
             if (delta < 0) {
                 current = next.clone();
-            } else if (Math.exp(delta / (T * 1.0)) > Math.random()) {
+                maxT=T;
+            } else if (Math.exp(delta * -1.0/ ((double) T /1000)) > random) {
                 current = next.clone();
+                maxT=T;
             }
             T--;
         }
+//        System.out.print( maxT+",");
         return current;
     }
 
@@ -61,13 +68,13 @@ public class SA {
         int runTime=30;
         double averageRuntime=(endTime-beginTime)/1000;
 
-        for (int i = 0; i < runTime-1; i++) {
-            System.out.println("==========begin " + i + " ==============");
+        for (int i = 0; i < runTime; i++) {
             beginTime = System.currentTimeMillis();
 //            System.out.println("schedule " + i + ":");
             SA sa = new SA(dates,properties);
+            System.out.print(i+",");
             Schedule result = sa.sa();
-            System.out.println(result.fitness);
+            System.out.print(result.fitness+",");
 //            System.out.println("is accepted:" + result.isAccepted());
 //            result.getDateScheduleList().forEach(item -> {
 //                System.out.println(item);
@@ -80,9 +87,8 @@ public class SA {
             endTime = System.currentTimeMillis();
             averageRuntime+=(endTime-beginTime)/1000;
 
-            System.out.println(i+","+((endTime-beginTime)/1000));
+            System.out.println((endTime-beginTime)/1000);;
 //            System.out.println("iter " + i + ":" + (endTime - beginTime) / 60000);
-            System.out.println("==========end==============");
         }
         System.out.println("best schedule fitness:" + bestSchedule.fitness);
         System.out.println("average fitness after run "+ runTime+":" + average/runTime);

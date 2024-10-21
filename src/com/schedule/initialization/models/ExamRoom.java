@@ -58,7 +58,7 @@ public class ExamRoom implements Cloneable, Serializable {
 //                        ",index:" + index +
 //                        ", sl:" + capacity
                 registrationClass.getName() + "," + registrationClass.getId() +
-                        "," + registrationClass.getGrade().getName() +
+                        "," + registrationClass.getGrade() +
                         "," + room.getName() +
                         "," + index +
                         "," + capacity

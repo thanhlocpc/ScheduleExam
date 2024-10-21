@@ -9,8 +9,7 @@ import java.io.Serializable;
 public class Subject implements  Serializable {
     private String id;
     private String name;
-    private int credit;
-    private int examForms; // hình thức thi: 0 thi lt, 1 thi thực hành,2 :vaans dap
+    private int examForms; // hình thức thi: 0 thi lt, 1 thi thực hành,2 :van dap
     private int examTime;
 
     public int getExamTime() {
@@ -21,31 +20,18 @@ public class Subject implements  Serializable {
         this.examTime = examTime;
     }
 
-    public int getLessonTime() {
-        return lessonTime;
-    }
-
-    public void setLessonTime(int lessonTime) {
-        this.lessonTime = lessonTime;
-    }
-
-    private int lessonTime;
-    public Subject(String id, String name, int credit, int examForms, int examTime, int lessonTime) {
+    public Subject(String id, String name, int examForms, int examTime) {
         this.id = id;
         this.name = name;
-        this.credit = credit;
         this.examForms = examForms;
         this.examTime = examTime;
-        this.lessonTime = lessonTime;
 
     }
     public Subject clone(){
         Subject s=new Subject();
         s.setId(this.getId());
         s.setName(this.getName());
-        s.setCredit(this.getCredit());
         s.setExamForms(this.getExamForms());
-        s.setLessonTime(this.getLessonTime());
         s.setExamTime(this.getExamTime());
         return s;
     }
@@ -54,7 +40,6 @@ public class Subject implements  Serializable {
         return "Subject{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", credit=" + credit +
                 ", examForms=" + examForms +
                 '}';
     }
@@ -93,14 +78,6 @@ public class Subject implements  Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getCredit() {
-        return credit;
-    }
-
-    public void setCredit(int credit) {
-        this.credit = credit;
     }
 
     public int getExamForms() {

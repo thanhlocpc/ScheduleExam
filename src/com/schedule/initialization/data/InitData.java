@@ -32,8 +32,6 @@ public class InitData {
         subjects = ExcelFile.getSubjects();
         registrationClasses = ExcelFile.getRegistrationClass(InitData.subjects);
         examDates = ExcelFile.getDates();
-        academyYear=ExcelFile.getAcademyYear();
-        semester=ExcelFile.getSemester();
     }
 
     public static void main(String[] args) {

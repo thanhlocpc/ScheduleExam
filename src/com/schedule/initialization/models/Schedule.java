@@ -29,24 +29,8 @@ public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
     List<Subject> subjectList;
     Map<Subject, Set<String>> subjectMap;
     List<SubjectSchedule> totalSubjectSchedule;
-    int semester;
-    int academyYear;
 
-    public int getSemester() {
-        return semester;
-    }
 
-    public void setSemester(int semester) {
-        this.semester = semester;
-    }
-
-    public int getAcademyYear() {
-        return academyYear;
-    }
-
-    public void setAcademyYear(int academyYear) {
-        this.academyYear = academyYear;
-    }
 
     public List<Integer> getScList() {
         return scList;
@@ -67,8 +51,6 @@ public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
         }
         generateSchedule(dates);
         this.scList = scList;
-        this.academyYear = InitData.academyYear;
-        this.semester = InitData.semester;
         fitness();
     }
 
@@ -250,18 +232,6 @@ public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
         this.dateScheduleList = dateScheduleList;
     }
 
-    public List<Subject> getSubjectList() throws IOException {
-        List<Subject> subjectList = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader("data/subject"));
-        String line = reader.readLine();
-        while (line != null) {
-            String[] tokens = line.split(",");
-            subjectList.add(new Subject(tokens[0], tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5])));
-            line = reader.readLine();
-        }
-        return subjectList;
-    }
-
     public boolean isAccepted() throws IOException {
         return remainSubject == 0 && isFinish();
     }
@@ -328,12 +298,12 @@ public class Schedule implements Comparable<Schedule>, Cloneable, Serializable {
 
             Map<String, Set<String>> mapCountSubjectOfGrade = new HashMap<>();
             newSubjectScheduleAll.stream().forEach(e -> {
-                if (mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()) != null) {
-                    mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade().getId()).add(e.getSubject().getId());
+                if (mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade()) != null) {
+                    mapCountSubjectOfGrade.get(e.getRoom().getRegistrationClass().getGrade()).add(e.getSubject().getId());
                 } else {
                     Set<String> subs = new HashSet<>();
                     subs.add(e.getSubject().getId());
-                    mapCountSubjectOfGrade.put(e.getRoom().getRegistrationClass().getGrade().getId(), subs);
+                    mapCountSubjectOfGrade.put(e.getRoom().getRegistrationClass().getGrade(), subs);
                 }
             });
 

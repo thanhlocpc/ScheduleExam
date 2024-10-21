@@ -45,6 +45,9 @@ public class GA {
     public Schedule ga() throws IOException, CloneNotSupportedException {
         createPopulation();
         int iter = 0;
+        double bestFitness=Double.MAX_VALUE;
+        int bestIter=0;
+        Schedule result=null;
         while (iter < N_ITER) {
             List<Schedule> newSchedule = new ArrayList<>();
             for (int i = 0; i < POP_SIZE; i++) {
@@ -62,15 +65,21 @@ public class GA {
             }
             schedules = newSchedule;
             iter++;
-        }
-        Collections.sort(schedules, new Comparator<Schedule>() {
-            @Override
-            public int compare(Schedule o1, Schedule o2) {
-                return Double.compare(o1.fitness, o2.fitness);
+            Collections.sort(schedules, new Comparator<Schedule>() {
+                @Override
+                public int compare(Schedule o1, Schedule o2) {
+                    return Double.compare(o1.fitness, o2.fitness);
+                }
+            });
+            if(bestFitness>schedules.get(0).fitness){
+                result=schedules.get(0).clone();
+                bestIter=iter;
+                bestFitness=result.fitness;
             }
-        });
-        System.out.print( iter+",");
-        return schedules.get(0);
+        }
+
+        System.out.print( bestIter+",");
+        return result;
     }
 
     public Schedule getParentByRandomSelection() {
